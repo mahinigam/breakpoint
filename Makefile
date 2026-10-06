@@ -12,12 +12,10 @@ features:
 	.venv/bin/python -m src.features.feature_engineering
 
 train:
-	# To be implemented in Phase 2 & 3
-	echo "Training models..."
+	.venv/bin/python -m src.models.train
 
 evaluate:
-	# To be implemented in Phase 4 & 5
-	echo "Evaluating models..."
+	.venv/bin/python -m src.decision.optimal_thresholds
 
 all: setup data features train evaluate
 
