@@ -16,6 +16,12 @@ train:
 
 evaluate:
 	.venv/bin/python -m src.decision.optimal_thresholds
+	.venv/bin/python -m src.models.calibration
+	.venv/bin/python -m src.evaluation.bootstrap
+	.venv/bin/python -m src.evaluation.power_analysis
+	.venv/bin/python -m src.monitoring.psi
+	.venv/bin/python -m src.explainability.shap_analysis
+	.venv/bin/python -m dashboards.export_dashboard_data
 
 all: setup data features train evaluate
 
