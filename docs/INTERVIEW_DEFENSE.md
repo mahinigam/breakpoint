@@ -28,3 +28,17 @@ This document prepares you for technical grilling on every design choice in the 
 
 **Q: Explain MiniMax Regret to a non-technical stakeholder.**
 *A: "We don't know exactly what the economy will do next year, so we can't perfectly optimize our approval cutoff. Instead of guessing, we found a 'safe' cutoff. The MiniMax Regret cutoff guarantees that whether the economy booms or crashes, we will never lose more than 4.7% of our maximum possible profit. It bounds our worst-case scenario."*
+
+## 4. Calibration & Statistical Rigor
+**Q: Why calibrate the model if your AUC was already 0.958?**
+*A: AUC only measures how well the model ranks customers, but our Expected Profit equation requires absolute probabilities to determine if a customer crosses the profit threshold. An uncalibrated model with a perfect AUC could still lose millions. We used Isotonic Regression to drop the Expected Calibration Error (ECE) to near zero.*
+
+**Q: Why use a Bootstrap Confidence Interval for profit instead of a simple t-test?**
+*A: Credit profit distributions are incredibly heavy-tailed (most customers pay a small margin, a few default with a massive loss). A standard t-test assumes a normal distribution and would severely underestimate the variance. Bootstrapping makes no distributional assumptions, making it the only safe choice for credit economics.*
+
+## 5. Monitoring & Explainability
+**Q: How do you know when to retrain the model in production?**
+*A: We monitor feature drift using the Population Stability Index (PSI). We break distributions into deciles and compare the training set to recent applications. If PSI > 0.25 on core features (like Delinquency `D_` variables), it triggers a red flag for retraining.*
+
+**Q: How do you provide reason codes if your features are anonymized?**
+*A: Using SHAP's TreeExplainer, we extracted the raw feature importances for each individual customer. Even though we don't know exactly what `D_39` is, we know `D` stands for Delinquency. We aggregated SHAP values by their prefix families to provide explainable categories like "Recent Delinquency Indicators" or "Payment-to-Balance Metrics".*

@@ -51,3 +51,29 @@ Because the true cost ratio $r$ is rarely known with certainty (and changes with
 | **MiniMax Cutoff** | **4.7%** | Aggressive |
 
 **Conclusion:** By deploying the MiniMax threshold of 0.0500, we guarantee that no matter what the macroeconomic environment becomes, the business will never leave more than 4.7% of optimal profit on the table. This is highly robust compared to standard statistical cutoffs.
+
+---
+
+## 4. Model Calibration
+Because expected profit relies strictly on accurate probabilities (not just ranking), we calibrated the LightGBM OOF predictions.
+- **Raw Brier Score:** 0.01216 (ECE: 0.00205)
+- **Platt Scaling Brier Score:** 0.01291 (ECE: 0.00252)
+- **Isotonic Regression Brier Score:** 0.01204 (ECE: 0.00014)
+
+Isotonic Regression successfully improved the Expected Calibration Error (ECE) to near perfect levels, proving that non-parametric calibration handles the complex LightGBM distributions best.
+
+---
+
+## 5. Statistical Rigor (Champion-Challenger)
+To prove the business value of transitioning from an F1-optimal policy to a MiniMax-optimal policy, we conducted a simulation-based Champion-Challenger Power Analysis and bootstrapped confidence intervals.
+
+Under a **Stress Scenario** ($200 margin, $9k loss):
+- **Mean Profit Advantage (MiniMax vs F1):** +$312,611,492.00
+- **95% Bootstrap Confidence Interval:** [$308,951,700.00, $316,271,550.00]
+- **Power Analysis:** A test requiring 80% power at alpha=0.05 can be achieved with just 10,000 accounts per arm (achieving 99.8% simulated power), due to the massive effect size.
+
+---
+
+## 6. Drift Monitoring & Explainability
+- **Population Stability Index (PSI):** Evaluated across 20 core numeric features between the training set and a 1% test sample. Zero features flagged a PSI > 0.25 (Significant Shift). Maximum observed PSI was 0.055 (`D_45`).
+- **SHAP Reason Codes:** Generated top-4 reason codes per account based on SHAP TreeExplainer grouped by feature family (Delinquency, Spend, Payment, Balance, Risk). Delinquency (D) and Payment (P) features showed the highest absolute impact.

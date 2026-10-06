@@ -1,6 +1,6 @@
 \begin{itemize}
     \item \textbf{Profit-Optimal Credit Decisioning:} Architected an out-of-core DuckDB pipeline to process 47GB of Amex default data, engineering point-in-time safe rolling features without triggering OOM errors.
     \item \textbf{Statistical vs. Economic Optimization:} Trained a LightGBM model (AUC 0.958) and proved that optimizing thresholds via F1 or KS statistics leads to severe profit losses (up to 31.8\% under stress scenarios).
-    \item \textbf{MiniMax Regret Policy:} Developed a robust MiniMax decision policy that bound worst-case economic regret to 4.7\% across varying macroeconomic environments, shifting focus from pure AUC to expected monetary value.
-    \item \textbf{Data Integrity \& CI/CD:} Built rigorous PyTest suites to detect future-data leakage in SQL window functions, ensuring the predictive model was perfectly calibrated for true-population inference.
+    \item \textbf{Statistical Rigor \& Calibration:} Applied Isotonic Regression to achieve near-perfect Expected Calibration Error (0.0001) and designed an offline simulation-based Champion-Challenger test demonstrating 99.8\% power with 10k accounts per arm.
+    \item \textbf{Explainability \& Monitoring:} Extracted grouped SHAP values to generate plain-English reason codes for rejected applicants and built a robust Population Stability Index (PSI) drift monitoring pipeline with automated retrain flags.
 \end{itemize}

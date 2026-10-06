@@ -4,7 +4,7 @@ import os
 import joblib
 from sklearn.model_selection import StratifiedKFold
 import lightgbm as lgb
-from src.config import PATHS, NEGATIVE_WEIGHT, SEED
+from src.config import PATHS, NEGATIVE_WEIGHT, SEED, ROOT_DIR
 from src.models.baseline_lr import get_lr_pipeline
 from src.models.lgbm import get_lgbm_model, optimize_lgbm
 from src.evaluation.metrics import evaluate_model
