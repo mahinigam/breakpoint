@@ -9,8 +9,7 @@ data:
 	.venv/bin/python -m src.data.validate
 
 features:
-	# To be implemented in Phase 1
-	echo "Running feature engineering..."
+	.venv/bin/python -m src.features.feature_engineering
 
 train:
 	# To be implemented in Phase 2 & 3
