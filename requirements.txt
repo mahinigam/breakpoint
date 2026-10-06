@@ -10,3 +10,4 @@ scipy
 pytest
 pyyaml
 optuna
+pyarrow
