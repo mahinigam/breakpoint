@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "breakpoint-credit-risk"
+version = "0.1.0"
+description = "Profit-Optimal Credit Decisioning"
+requires-python = ">=3.10"
+dependencies = [
+    "duckdb",
+    "pandas",
+    "numpy",
+    "lightgbm",
+    "scikit-learn",
+    "shap",
+    "matplotlib",
+    "seaborn",
+    "scipy",
+    "pyyaml",
+    "optuna"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

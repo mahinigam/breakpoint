@@ -1,0 +1,13 @@
+data/raw/*
+data/parquet/*
+data/processed/*
+!data/**/.gitkeep
+*.csv
+*.parquet
+__pycache__/
+*.pyc
+.DS_Store
+.venv/
+venv/
+env/
+.pytest_cache/

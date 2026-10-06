@@ -1,0 +1,21 @@
+scenarios:
+  conservative:
+    margin: 200
+    lgd: 0.8
+    exposure: 5000
+    description: "High-loss, low-margin product"
+  moderate:
+    margin: 500
+    lgd: 0.6
+    exposure: 5000
+    description: "Typical revolving credit"
+  aggressive:
+    margin: 1000
+    lgd: 0.4
+    exposure: 5000
+    description: "Premium, high-margin product"
+  stress:
+    margin: 200
+    lgd: 0.9
+    exposure: 10000
+    description: "Recession scenario"
