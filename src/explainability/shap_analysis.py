@@ -106,7 +106,7 @@ def main():
     
     # 3. Reason Code Generation (for 3 random high-risk customers)
     print("\n--- Reason Codes for Top 3 High-Risk Customers ---")
-    preds = model.predict_proba(X_shap)[:, 1]
+    preds = np.array(model.predict_proba(X_shap))[:, 1]
     top_indices = np.argsort(preds)[-3:][::-1] # 3 highest risk
     
     for i, idx in enumerate(top_indices):

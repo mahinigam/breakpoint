@@ -5,16 +5,16 @@ from src.config import PATHS
 
 def count_csv_lines(filepath):
     try:
-        res = duckdb.sql(f"SELECT COUNT(*) FROM read_csv_auto('{filepath}')").fetchone()[0]
-        return res
+        row = duckdb.sql(f"SELECT COUNT(*) FROM read_csv_auto('{filepath}')").fetchone()
+        return row[0] if row else None
     except Exception as e:
         print(f"Error reading CSV {filepath}: {e}")
         return None
 
 def count_parquet_lines(filepath):
     try:
-        res = duckdb.sql(f"SELECT COUNT(*) FROM parquet_scan('{filepath}')").fetchone()[0]
-        return res
+        row = duckdb.sql(f"SELECT COUNT(*) FROM parquet_scan('{filepath}')").fetchone()
+        return row[0] if row else None
     except Exception as e:
         print(f"Error reading Parquet {filepath}: {e}")
         return None
