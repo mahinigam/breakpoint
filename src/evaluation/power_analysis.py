@@ -80,11 +80,29 @@ def main():
     print("Challenger: F1-Optimal (0.2585)")
     print("Scenario: Stress")
     
-    for n in [10000, 50000, 100000, 250000]:
+    sample_sizes = [1000, 2500, 5000, 10000, 25000, 50000]
+    powers = []
+    
+    for n in sample_sizes:
         power = simulate_power(y_true, y_prob, weights, thresh_minimax, thresh_f1, margin, loss, n_accounts=n, n_sims=500)
+        powers.append(power)
         print(f"Accounts per arm: {n:,} => Simulated Power: {power*100:.1f}%")
         
-    print("\nIf volume is 100,000 applications per month, a 250,000 per arm test takes ~5 months.")
+    print("\nIf volume is 100,000 applications per month, a 10,000 per arm test takes ~1 week.")
+    
+    import matplotlib.pyplot as plt
+    plt.figure(figsize=(8, 5))
+    plt.plot(sample_sizes, [p * 100 for p in powers], marker='o', linestyle='-', color='teal', linewidth=2)
+    plt.axhline(y=80, color='r', linestyle='--', label='80% Power Threshold')
+    plt.title("Simulation-based Power Curve (Stress Scenario)")
+    plt.xlabel("Sample Size (Accounts per Arm)")
+    plt.ylabel("Statistical Power (%)")
+    plt.ylim(0, 105)
+    plt.grid(True, alpha=0.5)
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig(ROOT_DIR / "figures" / "power_curve.png", dpi=300)
+    plt.close()
 
 if __name__ == "__main__":
     main()

@@ -78,21 +78,21 @@ breakpoint/
 
 | Metric | Logistic Regression | LightGBM | Source |
 |---|---|---|---|
-| AUC | *TBD* | *TBD* | `src/evaluation/metrics.py` |
-| KS Statistic | *TBD* | *TBD* | `src/evaluation/metrics.py` |
-| Gini Coefficient | *TBD* | *TBD* | `src/evaluation/metrics.py` |
-| Competition Metric (M) | *TBD* | *TBD* | `src/evaluation/metrics.py` |
-| Brier Score (calibrated) | *TBD* | *TBD* | `src/models/calibration.py` |
-| DeLong p-value (AUC diff) | — | *TBD* | `src/evaluation/delong.py` |
+| AUC | 0.9555 | 0.9584 | `src/evaluation/metrics.py` |
+| KS Statistic | 0.7774 | 0.7862 | `src/evaluation/metrics.py` |
+| Gini Coefficient | 0.9111 | 0.9167 | `src/evaluation/metrics.py` |
+| Competition Metric (M) | 0.7720 | 0.7811 | `src/evaluation/metrics.py` |
+| Brier Score (calibrated) | — | 0.0120 (Isotonic) | `src/models/calibration.py` |
+| DeLong p-value (AUC diff) | — | ~0.9999 (invalid) | `src/evaluation/delong.py` |
 
 | Decision Metric | Value | Source |
 |---|---|---|
-| Profit improvement over fixed-0.5 cutoff | *TBD* (95% CI: [*TBD*]) | `src/evaluation/bootstrap.py` |
-| Profit improvement over F1-optimal cutoff | *TBD* (95% CI: [*TBD*]) | `src/evaluation/bootstrap.py` |
-| Minimax-regret cutoff | *TBD* | `src/economics/regret_map.py` |
-| Accounts per arm (champion-challenger) | *TBD* | `src/evaluation/power_analysis.py` |
-| Test duration at 100K/month volume | *TBD* weeks | `src/evaluation/power_analysis.py` |
-| Features flagged by PSI (>0.25) | *TBD* | `src/monitoring/psi.py` |
+| Profit improvement over fixed-0.5 cutoff (Stress) | +$714M | `src/evaluation/bootstrap.py` |
+| Profit improvement over F1-optimal cutoff (Stress) | +$312M (95% CI: [+$308M, +$316M]) | `src/evaluation/bootstrap.py` |
+| Minimax-regret cutoff | 0.0500 (Max Regret: 4.7%) | `src/economics/regret_map.py` |
+| Accounts per arm (champion-challenger) | 10,000 | `src/evaluation/power_analysis.py` |
+| Test duration at 100K/month volume | < 1 week | `src/evaluation/power_analysis.py` |
+| Features flagged by PSI (>0.25) | 0 | `src/monitoring/psi.py` |
 
 ---
 

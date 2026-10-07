@@ -105,28 +105,11 @@ def main():
     plt.close()
     
     # 3. Reason Code Generation (for 3 random high-risk customers)
-    print("\n--- Reason Codes for Top 3 High-Risk Customers ---")
-    preds = np.array(model.predict_proba(X_shap))[:, 1]
-    top_indices = np.argsort(preds)[-3:][::-1] # 3 highest risk
+    from src.explainability.reason_codes import print_reason_codes_for_top_risks
     
-    for i, idx in enumerate(top_indices):
-        customer_shap = shap_values_pos[idx]
-        # Get top 4 features pushing the score higher (positive SHAP)
-        top_4_idx = np.argsort(customer_shap)[-4:][::-1]
-        top_4_features = [X_shap.columns[k] for k in top_4_idx]
-        
-        reasons = []
-        for feat in top_4_features:
-            if feat.startswith('D_'): reasons.append(f"Delinquency indicator ({feat})")
-            elif feat.startswith('P_'): reasons.append(f"Payment metric ({feat})")
-            elif feat.startswith('B_'): reasons.append(f"Balance metric ({feat})")
-            elif feat.startswith('S_'): reasons.append(f"Spend behavior ({feat})")
-            elif feat.startswith('R_'): reasons.append(f"Risk metric ({feat})")
-            else: reasons.append(feat)
-            
-        print(f"Customer {i+1} (Risk Score: {preds[idx]:.3f})")
-        print(f"Action: Restrict/Decline")
-        print(f"Top reasons: 1. {reasons[0]}, 2. {reasons[1]}, 3. {reasons[2]}, 4. {reasons[3]}\n")
+    preds = np.array(model.predict_proba(X_shap))[:, 1]
+    feature_names = X_shap.columns.tolist()
+    print_reason_codes_for_top_risks(preds, shap_values_pos, feature_names, n_customers=3)
 
 if __name__ == "__main__":
     main()

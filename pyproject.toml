@@ -28,3 +28,9 @@ dev = [
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[tool.pyright]
+extraPaths = ["."]
+executionEnvironments = [
+  { root = "." }
+]
