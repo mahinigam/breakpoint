@@ -20,7 +20,8 @@ def generate_null_summary(df):
         'missing_percent': null_pct
     })
     
-    summary = summary[summary['missing_count'] > 0].sort_values('missing_percent', ascending=False)
+    mask = summary['missing_count'] > 0
+    summary = summary.loc[mask].sort_values(by='missing_percent', ascending=False)
     return summary
 
 def main():
