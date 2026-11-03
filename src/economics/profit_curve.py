@@ -75,6 +75,16 @@ class ScoreDistribution:
             total_weighted_pd=float(weighted_pd.sum()),
         )
 
+    def row_weights(self) -> np.ndarray:
+        """Per-row population weights, aligned with ``scores``."""
+        return np.diff(self.cum_weight)
+
+    def row_good(self) -> np.ndarray:
+        return np.diff(self.cum_good)
+
+    def row_bad(self) -> np.ndarray:
+        return np.diff(self.cum_bad)
+
     def _index(self, threshold: float | np.ndarray) -> np.ndarray:
         return np.searchsorted(self.scores, threshold, side="right")
 
@@ -183,6 +193,28 @@ def plot_profit_curves(scenario_profits: dict, output_dir: str | Path) -> None:
         ax.set_ylabel("Expected profit ($ millions)")
         ax.grid(True, linestyle="--", alpha=0.4)
         ax.legend(loc="best", frameon=False)
+
+        # The economically interesting region sits below 10% PD, where the
+        # linear axis compresses the peak into a few pixels.
+        zoom_mask = thresholds <= 0.1
+        if zoom_mask.sum() >= 2:
+            inset = ax.inset_axes([0.56, 0.10, 0.40, 0.32])
+            inset.plot(
+                thresholds[zoom_mask],
+                profits[zoom_mask] / 1e6,
+                color=color,
+                linewidth=1.8,
+            )
+            inset.axvline(
+                data["empirical_opt"],
+                color="#111111",
+                linestyle="--",
+                linewidth=1.2,
+            )
+            inset.set_xlim(0, 0.1)
+            inset.set_title("Low-PD zoom", fontsize=9)
+            inset.tick_params(labelsize=8)
+            inset.grid(True, linestyle="--", alpha=0.3)
         fig.tight_layout()
         filename = f"profit_curve_{name.lower().replace(' ', '_')}.png"
         fig.savefig(output_dir / filename, dpi=300)

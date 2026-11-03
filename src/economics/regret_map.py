@@ -38,14 +38,16 @@ def plot_regret_map(
 
     n_ticks = min(14, len(thresholds))
     index = np.unique(np.linspace(0, len(thresholds) - 1, n_ticks, dtype=int))
+    worst_case = np.max(regret_matrix, axis=0)
+    minimax_index = int(np.argmin(worst_case))
+    if minimax_threshold is not None:
+        nearest = int(np.argmin(np.abs(thresholds - minimax_threshold)))
+        index = np.unique(np.append(index, nearest))
     plot_matrix = regret_matrix[:, index]
     plot_thresholds = thresholds[index]
 
-    worst_case = np.max(regret_matrix, axis=0)
-    minimax_index = int(np.argmin(worst_case))
-
-    fig = plt.figure(figsize=(14, 9))
-    grid = fig.add_gridspec(2, 1, height_ratios=[2.1, 1.0], hspace=0.35)
+    fig = plt.figure(figsize=(14, 9.5))
+    grid = fig.add_gridspec(2, 1, height_ratios=[2.1, 1.0], hspace=0.55)
 
     ax_heat = fig.add_subplot(grid[0])
     sns.heatmap(
@@ -53,28 +55,23 @@ def plot_regret_map(
         annot=True,
         fmt=".1%",
         cmap="YlOrRd",
-        xticklabels=[f"{value:.3f}" for value in plot_thresholds],
+        xticklabels=[f"{value:.3g}" for value in plot_thresholds],
         yticklabels=[name.title() for name in scenarios],
         ax=ax_heat,
         cbar_kws={"label": "Fractional regret"},
     )
     ax_heat.set_title("Regret map: profit left on the table")
-    ax_heat.set_xlabel("Probability cutoff")
+    ax_heat.set_xlabel("")
     ax_heat.set_ylabel("Economic scenario")
 
     if minimax_threshold is not None:
         nearest = int(np.argmin(np.abs(thresholds - minimax_threshold)))
-        if nearest in index:
-            position = int(np.where(index == nearest)[0][0])
-            ax_heat.axvline(position + 0.5, color="#111111", linewidth=2.5)
-            ax_heat.text(
-                position + 0.55,
-                -0.15,
-                f"minimax {minimax_threshold:.4f}",
-                color="#111111",
-                fontsize=9,
-                fontweight="bold",
-            )
+        position = int(np.where(index == nearest)[0][0])
+        ax_heat.axvline(position + 0.5, color="#111111", linewidth=2.5)
+        ax_heat.set_title(
+            "Regret map: profit left on the table "
+            f"(black line = minimax cutoff {minimax_threshold:.4g})"
+        )
 
     ax_line = fig.add_subplot(grid[1])
     ax_line.plot(thresholds, worst_case * 100, color="#111111", linewidth=2)
@@ -94,7 +91,7 @@ def plot_regret_map(
     ax_line.grid(True, linestyle="--", alpha=0.4)
     ax_line.legend(frameon=False)
 
-    fig.tight_layout()
+    fig.subplots_adjust(left=0.13, right=0.95, top=0.93, bottom=0.09)
     fig.savefig(output_dir / filename, dpi=300, bbox_inches="tight")
     plt.close(fig)
     return regret_matrix

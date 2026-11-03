@@ -16,7 +16,6 @@ import numpy as np
 import pandas as pd
 
 from src.economics.profit_curve import ScoreDistribution
-from src.policy.actions import action_profit_at
 
 
 def run_sensitivity_sweep(
@@ -31,6 +30,9 @@ def run_sensitivity_sweep(
     cost_ratio_config: dict[str, float],
 ) -> tuple[pd.DataFrame, dict[str, float]]:
     """Compute captured-profit curves for every policy across ``r``."""
+    # Imported lazily to avoid a circular import between economics and policy.
+    from src.policy.actions import action_profit_at
+
     r_values = np.linspace(
         float(cost_ratio_config["min"]),
         float(cost_ratio_config["max"]),

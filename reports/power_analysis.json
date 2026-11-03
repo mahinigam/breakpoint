@@ -1,0 +1,78 @@
+{
+  "binary_threshold": 0.0531240049964486,
+  "challenger": "binary_minimax",
+  "champion": "three_action_robust",
+  "environment": {
+    "generated_at": "2026-11-03T11:39:49.625784+00:00",
+    "git_commit": "fddb20a",
+    "lightgbm": "4.7.0",
+    "numpy": "2.5.3",
+    "pandas": "3.0.6",
+    "platform": "macOS-27.2-arm64-arm-64bit-Mach-O",
+    "python": "3.14.8",
+    "scikit_learn": "1.9.1"
+  },
+  "grow_cutoff": 0.0008270590919461555,
+  "interpretation": "Two-arm test with independent draws from the population-weighted score/label distribution; one-sided alpha = 0.05.",
+  "required_n_per_arm_80pct": 17610,
+  "restrict_cutoff": 0.040517027094208305,
+  "results": [
+    {
+      "alpha": 0.05,
+      "mean_difference": 15.512799999999999,
+      "n_accounts_per_arm": 1000,
+      "n_sims": 500,
+      "power": 0.16,
+      "std_difference": 23.416927286197353
+    },
+    {
+      "alpha": 0.05,
+      "mean_difference": 13.910272,
+      "n_accounts_per_arm": 2500,
+      "n_sims": 500,
+      "power": 0.258,
+      "std_difference": 14.932505089183563
+    },
+    {
+      "alpha": 0.05,
+      "mean_difference": 15.396376,
+      "n_accounts_per_arm": 5000,
+      "n_sims": 500,
+      "power": 0.44,
+      "std_difference": 10.448445249456292
+    },
+    {
+      "alpha": 0.05,
+      "mean_difference": 15.492136,
+      "n_accounts_per_arm": 10000,
+      "n_sims": 500,
+      "power": 0.662,
+      "std_difference": 7.562065018776313
+    },
+    {
+      "alpha": 0.05,
+      "mean_difference": 14.9791168,
+      "n_accounts_per_arm": 25000,
+      "n_sims": 500,
+      "power": 0.934,
+      "std_difference": 4.799641311460171
+    },
+    {
+      "alpha": 0.05,
+      "mean_difference": 14.393548000000001,
+      "n_accounts_per_arm": 50000,
+      "n_sims": 500,
+      "power": 0.996,
+      "std_difference": 3.485559484147569
+    }
+  ],
+  "sample_sizes_per_arm": [
+    1000,
+    2500,
+    5000,
+    10000,
+    25000,
+    50000
+  ],
+  "scenario": "stress"
+}

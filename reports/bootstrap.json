@@ -1,0 +1,99 @@
+{
+  "binary_threshold": 0.0531240049964486,
+  "environment": {
+    "generated_at": "2026-11-03T11:39:42.973408+00:00",
+    "git_commit": "fddb20a",
+    "lightgbm": "4.7.0",
+    "numpy": "2.5.3",
+    "pandas": "3.0.6",
+    "platform": "macOS-27.2-arm64-arm-64bit-Mach-O",
+    "python": "3.14.8",
+    "scikit_learn": "1.9.1"
+  },
+  "f1_threshold": 0.24286571988797293,
+  "grow_cutoff": 0.0008270590919461555,
+  "n_boot": 1000,
+  "restrict_cutoff": 0.040517027094208305,
+  "results": {
+    "aggressive": {
+      "action_vs_binary": {
+        "ci_high": 324483350.0,
+        "ci_low": 318179900.0,
+        "mean_difference": 321379035.0,
+        "n_boot": 1000,
+        "observed_difference": 321371000.0,
+        "p_value": 0.0,
+        "probability_positive": 1.0
+      },
+      "binary_vs_f1": {
+        "ci_high": -270252350.0,
+        "ci_low": -280557550.0,
+        "mean_difference": -275426280.0,
+        "n_boot": 1000,
+        "observed_difference": -275448000.0,
+        "p_value": 0.0,
+        "probability_positive": 0.0
+      }
+    },
+    "conservative": {
+      "action_vs_binary": {
+        "ci_high": 80922160.00000012,
+        "ci_low": 79193640.00000012,
+        "mean_difference": 80067129.60000013,
+        "n_boot": 1000,
+        "observed_difference": 80076400.00000012,
+        "p_value": 0.0,
+        "probability_positive": 1.0
+      },
+      "binary_vs_f1": {
+        "ci_high": 104396300.0,
+        "ci_low": 101055800.0,
+        "mean_difference": 102725784.0,
+        "n_boot": 1000,
+        "observed_difference": 102720000.0,
+        "p_value": 0.0,
+        "probability_positive": 1.0
+      }
+    },
+    "moderate": {
+      "action_vs_binary": {
+        "ci_high": 171042025.0,
+        "ci_low": 167817975.0,
+        "mean_difference": 169462474.5,
+        "n_boot": 1000,
+        "observed_difference": 169464500.0,
+        "p_value": 0.0,
+        "probability_positive": 1.0
+      },
+      "binary_vs_f1": {
+        "ci_high": -47205825.0,
+        "ci_low": -52874850.0,
+        "mean_difference": -50040340.0,
+        "n_boot": 1000,
+        "observed_difference": -50052000.0,
+        "p_value": 0.0,
+        "probability_positive": 0.0
+      }
+    },
+    "stress": {
+      "action_vs_binary": {
+        "ci_high": 103451712.50000012,
+        "ci_low": 100618032.50000012,
+        "mean_difference": 101999522.1000001,
+        "n_boot": 1000,
+        "observed_difference": 102023900.00000012,
+        "p_value": 0.0,
+        "probability_positive": 1.0
+      },
+      "binary_vs_f1": {
+        "ci_high": 324937675.0,
+        "ci_low": 318747850.0,
+        "mean_difference": 321907784.0,
+        "n_boot": 1000,
+        "observed_difference": 321900000.0,
+        "p_value": 0.0,
+        "probability_positive": 1.0
+      }
+    }
+  }
+}

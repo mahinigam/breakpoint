@@ -1,5 +1,6 @@
 import duckdb
 import os
+from pathlib import Path
 from src.config import PATHS
 
 def convert_csv_to_parquet(csv_path, parquet_path):
@@ -7,8 +8,9 @@ def convert_csv_to_parquet(csv_path, parquet_path):
         print(f"Skipping {csv_path}: File not found.")
         return
         
+    Path(parquet_path).parent.mkdir(parents=True, exist_ok=True)
     print(f"Converting {csv_path} to {parquet_path}...")
-    
+
     # Using DuckDB to stream CSV to Parquet out-of-core
     query = f"COPY (SELECT * FROM read_csv_auto('{csv_path}')) TO '{parquet_path}' (FORMAT 'parquet');"
     
@@ -24,6 +26,7 @@ def main():
     
     # Convert a sample of test_data for drift analysis
     if os.path.exists(PATHS["raw_test_data"]):
+        Path(PATHS["parquet_test_sample"]).parent.mkdir(parents=True, exist_ok=True)
         print(f"Sampling 1% of {PATHS['raw_test_data']} to {PATHS['parquet_test_sample']}...")
         query = f"COPY (SELECT * FROM read_csv_auto('{PATHS['raw_test_data']}') USING SAMPLE 1%) TO '{PATHS['parquet_test_sample']}' (FORMAT 'parquet');"
         duckdb.sql(query)

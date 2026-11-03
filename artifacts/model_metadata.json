@@ -1,0 +1,129 @@
+{
+  "best_iterations": [
+    299,
+    299,
+    216,
+    300,
+    298
+  ],
+  "bootstrap_auc_difference": {
+    "ci_high": 0.003087590313793778,
+    "ci_low": 0.002715373931882853,
+    "n_boot": 300,
+    "observed_difference": 0.0028981546619191167,
+    "p_value": 0.0
+  },
+  "categorical_features": [
+    "D_63",
+    "D_64"
+  ],
+  "dataset_rows": 458913,
+  "dataset_sample_frac": 1.0,
+  "delong_p_value_unweighted": 0.0,
+  "early_stopping_rounds": 75,
+  "environment": {
+    "generated_at": "2026-11-03T11:35:04.496440+00:00",
+    "git_commit": "fddb20a",
+    "lightgbm": "4.7.0",
+    "numpy": "2.5.3",
+    "pandas": "3.0.6",
+    "platform": "macOS-27.2-arm64-arm-64bit-Mach-O",
+    "python": "3.14.8",
+    "scikit_learn": "1.9.1"
+  },
+  "final_n_estimators": 282,
+  "fold_metrics": [
+    {
+      "best_iteration": 299,
+      "fold": 1,
+      "lgb_amex": 0.7770949100916751,
+      "lgb_auc": 0.9574576131127976,
+      "lgb_ks": 0.7863404110261671,
+      "lr_amex": 0.7667267438576943,
+      "lr_auc": 0.954494984201042,
+      "lr_ks": 0.7757839425946762,
+      "train_rows": 367130,
+      "valid_rows": 91783
+    },
+    {
+      "best_iteration": 299,
+      "fold": 2,
+      "lgb_amex": 0.7849244714676358,
+      "lgb_auc": 0.9593332907893559,
+      "lgb_ks": 0.7885723595609555,
+      "lr_amex": 0.7752088556240333,
+      "lr_auc": 0.9562868662274162,
+      "lr_ks": 0.7797224934278085,
+      "train_rows": 367130,
+      "valid_rows": 91783
+    },
+    {
+      "best_iteration": 216,
+      "fold": 3,
+      "lgb_amex": 0.7817626643380983,
+      "lgb_auc": 0.9588223294058421,
+      "lgb_ks": 0.7863940141363717,
+      "lr_amex": 0.7738008434167207,
+      "lr_auc": 0.9565829691425475,
+      "lr_ks": 0.7801373312314437,
+      "train_rows": 367130,
+      "valid_rows": 91783
+    },
+    {
+      "best_iteration": 300,
+      "fold": 4,
+      "lgb_amex": 0.7832803132616185,
+      "lgb_auc": 0.959000910778976,
+      "lgb_ks": 0.7881341882200024,
+      "lr_amex": 0.7737894513636601,
+      "lr_auc": 0.9560322453884864,
+      "lr_ks": 0.7791288239375039,
+      "train_rows": 367131,
+      "valid_rows": 91782
+    },
+    {
+      "best_iteration": 298,
+      "fold": 5,
+      "lgb_amex": 0.7798854187394972,
+      "lgb_auc": 0.9579203440498276,
+      "lgb_ks": 0.7841417796811301,
+      "lr_amex": 0.7693822732482867,
+      "lr_auc": 0.9545916147168328,
+      "lr_ks": 0.7757184359557937,
+      "train_rows": 367131,
+      "valid_rows": 91782
+    }
+  ],
+  "folds": 5,
+  "lgbm_params": {
+    "colsample_bytree": 0.8,
+    "learning_rate": 0.05,
+    "max_depth": 6,
+    "min_child_samples": 20,
+    "n_estimators": 282,
+    "num_leaves": 31,
+    "reg_alpha": 0.0,
+    "reg_lambda": 0.0,
+    "subsample": 0.8
+  },
+  "n_categorical_features": 2,
+  "n_features": 200,
+  "n_numeric_features": 198,
+  "negative_weight": 20.0,
+  "oof_metrics": {
+    "lightgbm": {
+      "AUC": 0.9584963510686133,
+      "Amex Metric": 0.7814126670884066,
+      "Brier": 0.012211369606280286,
+      "Gini": 0.9169927021372266,
+      "KS": 0.7862829526807507
+    },
+    "logistic_regression": {
+      "AUC": 0.9555981964066942,
+      "Amex Metric": 0.7716432362962825,
+      "Brier": 0.012242657330148905,
+      "Gini": 0.9111963928133884,
+      "KS": 0.7775856931624477
+    }
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "bins": 12,
+  "environment": {
+    "generated_at": "2026-11-03T11:35:41.538899+00:00",
+    "git_commit": "fddb20a",
+    "lightgbm": "4.7.0",
+    "numpy": "2.5.3",
+    "pandas": "3.0.6",
+    "platform": "macOS-27.2-arm64-arm-64bit-Mach-O",
+    "python": "3.14.8",
+    "scikit_learn": "1.9.1"
+  },
+  "folds": 5,
+  "method": "isotonic",
+  "metrics": {
+    "isotonic": {
+      "auc": 0.9583926928148582,
+      "brier": 0.012054763505306263,
+      "ece_quantile": 7.477251198557486e-05,
+      "ece_uniform": 0.0001712056299376021,
+      "log_loss": 0.04677632039397764
+    },
+    "platt": {
+      "auc": 0.9582688116650075,
+      "brier": 0.012923594121912905,
+      "ece_quantile": 0.013851719598945919,
+      "ece_uniform": 0.002582795643015264,
+      "log_loss": 0.05813733262889382
+    },
+    "raw": {
+      "auc": 0.9584963510686133,
+      "brier": 0.012211369606280286,
+      "ece_quantile": 0.002398857733829238,
+      "ece_uniform": 0.002398857733829239,
+      "log_loss": 0.04711840440858091
+    }
+  },
+  "selected_metrics": {
+    "auc": 0.9583926928148582,
+    "brier": 0.012054763505306263,
+    "ece_quantile": 7.477251198557486e-05,
+    "ece_uniform": 0.0001712056299376021,
+    "log_loss": 0.04677632039397764
+  }
+}

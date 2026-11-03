@@ -1,0 +1,5 @@
+scenario,scenario_label,cost_ratio,binary_profit_millions,action_profit_millions,oracle_profit_millions,profit_uplift_pct,binary_regret_vs_oracle_pct,action_regret_pct,expected_loss_change_pct,exposure_change_pct,grow_share_pct,hold_share_pct,restrict_share_pct
+conservative,Conservative,20.0,1176.608,1256.6844,1258.5284,6.8057,6.5092,0.1465,-17.7797,30.721,59.9985,31.0501,8.9514
+moderate,Moderate,6.0,3116.646,3286.1105,3333.0185,5.4374,6.4918,1.4074,-17.7797,30.721,59.9985,31.0501,8.9514
+aggressive,Aggressive,2.0,6333.364,6654.735,6774.607,5.0743,6.5132,1.7694,-17.7797,30.721,59.9985,31.0501,8.9514
+stress,Stress,45.0,1051.518,1153.5419,1175.0949,9.7025,10.5163,1.8341,-17.7797,30.721,59.9985,31.0501,8.9514

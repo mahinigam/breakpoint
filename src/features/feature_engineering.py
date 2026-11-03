@@ -12,6 +12,8 @@ def run_feature_engineering():
         print(f"Error: Input file {input_parquet} does not exist.")
         return
 
+    Path(output_parquet).parent.mkdir(parents=True, exist_ok=True)
+
     # Load SQL scripts
     sql_dir = ROOT_DIR / "sql"
     with open(sql_dir / "02_feature_engineering.sql", "r") as f:
