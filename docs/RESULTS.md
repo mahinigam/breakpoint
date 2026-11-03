@@ -1,79 +1,252 @@
-# Model Evaluation & Profit Optimization Results
+# Results
 
-## 1. Predictive Modeling Performance
-We built a LightGBM model utilizing out-of-core windowed features to predict credit default on the Amex dataset. The model was evaluated using 5-Fold Stratified Cross-Validation on 458,913 customers (with the standard 20x weighting applied to negative classes to undo the competition's 5% subsampling).
+Generated from `reports/metrics.json`, `reports/policy.json`,
+`reports/bootstrap.json`, `reports/power_analysis.json`,
+`reports/drift_summary.json`, and `reports/explainability.json`.
 
-| Metric | Logistic Regression (Baseline) | LightGBM |
-|---|---|---|
-| **AUC** | 0.9555 | **0.9584** |
-| **Gini** | 0.9111 | **0.9167** |
-| **Amex Metric** | 0.7720 | **0.7811** |
-| **KS Stat** | 0.7774 | **0.7862** |
+> **Scope.** All performance and profit numbers are out-of-fold evidence on the
+> labelled Amex training population. The public test labels are unavailable.
+> Dollar values are expected profit under labelled assumptions, not actual P&L.
 
-*Note on Statistical Significance: We implemented a DeLong test to evaluate the AUC lift (0.0029). However, standard implementations of DeLong expect unweighted rank-sums. Applying it blindly to our 20x subsampled dataset calculates variance on the wrong population, yielding invalid p-values (~0.9999). This highlights a critical flaw in relying purely on statistical tests for imbalanced real-world data, underscoring the need to measure success via Expected Profit.*
+## 1. Executive summary
 
----
+- **458,913** customers, **200** features (198 numeric, 2 categorical), 5-fold
+  stratified out-of-fold predictions.
+- Calibrated AUC **0.9584**, Amex metric
+  **0.7814**, KS **0.7861**,
+  Brier **0.012055**.
+- Three-action policy: Grow ≤ `0.000827`, Hold ≤
+  `0.040517`, Restrict above.
+- Population-weighted action mix: **60.0% Grow /
+  31.1% Hold /
+  9.0% Restrict**.
+- Worst-case regret **1.83%**, versus
+  **4.26%** for binary minimax.
+- Profit uplift versus binary: **+5.1%**
+  to **+9.7%**.
+- Expected loss **-17.8%**,
+  exposure **+30.7%** (stress).
+- Bootstrap action-vs-binary advantage in stress:
+  **$102.0M**
+  **[$100.6M,
+  $103.5M]**.
+- Champion/challenger: **17,610 accounts per arm**
+  for 80% power.
 
-## 2. Thresholding Heuristics vs. Optimal Economics
-Data science teams typically pick thresholds based on statistical heuristics. For our LightGBM model, these were:
-- **KS Optimal Threshold:** 0.0189
-- **Top 4% Volume Reject:** 0.1108
-- **F1 Optimal Threshold:** 0.2585
+## 2. Validation design
 
-We compared these heuristic thresholds against the **Empirical Profit-Optimal Threshold** across four vastly different economic scenarios (Cost Ratio $r$ = Loss / Margin).
+| Item | Value |
+|---|---|
+| Training rows | 458,913 |
+| Features | 200 (198 numeric, 2 categorical) |
+| Folds | 5 stratified |
+| Final trees | 282 |
+| Early stopping | 75 rounds |
+| Negative-class weight | 20× |
+| Population-weighted default rate | 1.717% |
+| Unweighted sample default rate | 25.89% |
 
-### The "Left on the Table" Penalty
-If the business followed statistical heuristics instead of profit-optimization, the lost profit (regret) would be:
+The weighting correction is essential. The model is trained and evaluated with
+the 20× negative-class weight; the unweighted 25.89% is the subsampled training
+rate, not the portfolio default rate.
 
-| Scenario | $r$ (LGD / Margin) | KS Penalty | Top-4% Penalty | F1 Penalty |
-|---|---|---|---|---|
-| **Stress** | 45.0 ($9k loss / $200) | 0.0% | 14.0% | **31.8%** |
-| **Conservative** | 20.0 ($4k loss / $200) | 2.8% | 2.1% | 8.2% |
-| **Moderate** | 6.0 ($3k loss / $500) | 7.9% | 0.2% | 0.3% |
-| **Aggressive** | 2.0 ($2k loss / $1k) | **10.9%** | 1.5% | 0.1% |
+## 3. Model performance
 
-**Insight:** There is no single "best" statistical heuristic. F1 works well in an aggressive growth environment but loses 31.8% ($348 Million) in a stress scenario. KS performs well in a stress scenario but loses 10.9% ($718 Million) in an aggressive environment.
+| Model | AUC | Amex | KS | Gini | Brier |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Logistic regression (OOF) | 0.9556 | 0.7716 | 0.7776 | 0.9112 | 0.012243 |
+| LightGBM (OOF, raw) | 0.9585 | 0.7814 | 0.7863 | 0.9170 | 0.012211 |
+| LightGBM (OOF, isotonic) | 0.9584 | 0.7814 | 0.7861 | 0.9168 | 0.012055 |
 
----
+The unweighted DeLong test is supplementary. The primary AUC comparison is a
+class-stratified weighted bootstrap: observed difference
+**0.0029**,
+95% CI **[0.0027,
+0.0031]**, with
+300 replicates.
 
-## 3. The MiniMax Regret Solution
-Because the true cost ratio $r$ is rarely known with certainty (and changes with macroeconomics), we calculated a **MiniMax Regret Threshold**. This threshold minimizes the maximum fractional regret across all possible economic scenarios.
+## 4. Calibration
 
-- **MiniMax Regret Threshold:** 0.0500
-- **Maximum Bound Regret:** 4.7%
+| Method | AUC | Brier | Log loss | ECE (quantile) | ECE (uniform) |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Isotonic | 0.9584 | 0.012055 | 0.04678 | 0.0075% | 0.0171% |
+| Platt | 0.9583 | 0.012924 | 0.05814 | 1.3852% | 0.2583% |
+| Raw | 0.9585 | 0.012211 | 0.04712 | 0.2399% | 0.2399% |
 
-### Worst-Case Regret Comparison
-| Policy | Worst-Case Regret | Worst-Case Scenario |
-|---|---|---|
-| **F1 Cutoff** | 31.8% | Stress |
-| **Top-4% Cutoff** | 14.0% | Stress |
-| **KS Cutoff** | 10.9% | Aggressive |
-| **MiniMax Cutoff** | **4.7%** | Aggressive |
+Isotonic calibration is the selected method. It is monotonic, so AUC is
+essentially unchanged; it wins on Brier and ECE. Calibration is cross-fitted:
+each fold's map is fit on the other folds and applied out of fold.
 
-**Conclusion:** By deploying the MiniMax threshold of 0.0500, we guarantee that no matter what the macroeconomic environment becomes, the business will never leave more than 4.7% of optimal profit on the table. This is highly robust compared to standard statistical cutoffs.
+## 5. Threshold heuristics and policy cutoffs
 
----
+| Policy | Cutoff | Role |
+| --- | ---: | ---: |
+| F1-optimal | 0.242866 | Classification heuristic |
+| KS-optimal | 0.017041 | Separability heuristic |
+| Top 4% reject | 0.103072 | Volume heuristic |
+| Fixed 0.5 | 0.500000 | Default convention |
+| Binary minimax | 0.053124 | Single-cutoff robust policy |
+| Action Grow | 0.000827 | Three-action policy |
+| Action Restrict | 0.040517 | Three-action policy |
 
-## 4. Model Calibration
-Because expected profit relies strictly on accurate probabilities (not just ranking), we calibrated the LightGBM OOF predictions.
-- **Raw Brier Score:** 0.01216 (ECE: 0.00205)
-- **Platt Scaling Brier Score:** 0.01291 (ECE: 0.00252)
-- **Isotonic Regression Brier Score:** 0.01204 (ECE: 0.00014)
+The F1, KS, and top-4% cutoffs are statistical heuristics. They are not
+profit-optimal, and their regret varies sharply by scenario. The binary minimax
+cutoff is the strongest single-cutoff baseline. The action policy uses two
+cutoffs because it chooses among three actions.
 
-Isotonic Regression successfully improved the Expected Calibration Error (ECE) to near perfect levels, proving that non-parametric calibration handles the complex LightGBM distributions best.
+## 6. Three-action policy
 
----
+| Action | Margin multiplier | Exposure multiplier | Share | Bad rate |
+| --- | ---: | ---: | ---: | ---: |
+| Grow | 110% | 150% | 60.0% | 0.02% |
+| Hold | 100% | 100% | 31.1% | 0.90% |
+| Restrict | 0% | 0% | 9.0% | 15.92% |
 
-## 5. Statistical Rigor (Champion-Challenger)
-To prove the business value of transitioning from an F1-optimal policy to a MiniMax-optimal policy, we conducted a simulation-based Champion-Challenger Power Analysis and bootstrapped confidence intervals.
+Guardrails: Grow ≤ **60%**,
+Hold ≥ **10%**, expected-loss
+increase ≤ **10%**.
+The selected policy binds the Grow cap exactly.
 
-Under a **Stress Scenario** ($200 margin, $9k loss):
-- **Mean Profit Advantage (MiniMax vs F1):** +$312,611,492.00
-- **95% Bootstrap Confidence Interval:** [$308,951,700.00, $316,271,550.00]
-- **Power Analysis:** A test requiring 80% power at alpha=0.05 can be achieved with just 10,000 accounts per arm (achieving 99.8% simulated power), due to the massive effect size.
+## 7. Scenario comparison
 
----
+| Scenario | Binary | 3-action | Oracle | Uplift | Binary regret | Action regret |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Conservative | $1,176.6M | $1,256.7M | $1,258.5M | +6.8% | 6.5% | 0.15% |
+| Moderate | $3,116.6M | $3,286.1M | $3,333.0M | +5.4% | 6.5% | 1.41% |
+| Aggressive | $6,333.4M | $6,654.7M | $6,774.6M | +5.1% | 6.5% | 1.77% |
+| Stress | $1,051.5M | $1,153.5M | $1,175.1M | +9.7% | 10.5% | 1.83% |
 
-## 6. Drift Monitoring & Explainability
-- **Population Stability Index (PSI):** Evaluated across 20 core numeric features between the training set and a 1% test sample. Zero features flagged a PSI > 0.25 (Significant Shift). Maximum observed PSI was 0.055 (`D_45`).
-- **SHAP Reason Codes:** Generated top-4 reason codes per account based on SHAP TreeExplainer grouped by feature family (Delinquency, Spend, Payment, Balance, Risk). Delinquency (D) and Payment (P) features showed the highest absolute impact.
+The binary policy is the best single cutoff across the four scenarios; the
+three-action policy is the best constrained action rule. The action oracle is
+the best constrained three-action rule **per scenario**, so it is an upper bound,
+not a deployable policy.
+
+## 8. Regret, guardrails, and partial restrict
+
+| Grow cap | Grow cutoff | Restrict cutoff | Worst-case regret |
+| --- | ---: | ---: | ---: |
+| 50% | 0.000412 | 0.040517 | 1.87% |
+| 60% | 0.000827 | 0.040517 | 1.83% |
+| 70% | 0.002463 | 0.040353 | 1.70% |
+| 80% | 0.006632 | 0.039206 | 1.66% |
+
+A 50% Grow cap costs **1.87%**
+worst-case regret; 80% costs **1.66%**.
+The cap is a business choice, not a modelling artifact.
+
+A partial-restrict alternative (50% line reduction instead of full exit) has
+worst-case regret **2.34%**, worse than the
+full-exit policy's **1.83%**.
+
+Continuous cost-ratio sensitivity: the action policy's worst-case regret is
+**0.38%** at cost ratio
+**1.0**; the binary
+minimax sweep's worst case is **5.29%**
+at **50.0**.
+
+## 9. Paired bootstrap
+
+| Scenario | Action − binary | 95% CI | p-value |
+| --- | ---: | ---: | ---: |
+| Conservative | $80.1M | [$79.2M, $80.9M] | <0.001 |
+| Moderate | $169.5M | [$167.8M, $171.0M] | <0.001 |
+| Aggressive | $321.4M | [$318.2M, $324.5M] | <0.001 |
+| Stress | $102.0M | [$100.6M, $103.5M] | <0.001 |
+
+The bootstrap resamples customers with replacement, preserving the 20×
+population weight and the pairing between policies. The action-vs-binary
+advantage is positive in every replicate in every scenario. Confidence
+intervals describe sampling uncertainty in this labelled dataset, not
+model-risk or future-regime uncertainty.
+
+## 10. Power analysis
+
+| Accounts / arm | Power | Mean Δ ($/account) | SD Δ ($/account) |
+| --- | ---: | ---: | ---: |
+| 1,000 | 16.0% | 15.51 | 23.42 |
+| 2,500 | 25.8% | 13.91 | 14.93 |
+| 5,000 | 44.0% | 15.40 | 10.45 |
+| 10,000 | 66.2% | 15.49 | 7.56 |
+| 25,000 | 93.4% | 14.98 | 4.80 |
+| 50,000 | 99.6% | 14.39 | 3.49 |
+
+Required sample size for 80% power: **17,610
+accounts per arm**. This is a two-arm simulation from the population-weighted
+score/label distribution, not a live test.
+
+## 11. Monitoring
+
+| Monitoring item | Value |
+| --- | ---: |
+| Reference rows | 368,710 |
+| Current rows | 90,203 |
+| Split | Earliest 80% of accounts by statement date vs latest 20% (cutoff 2018-03-25) |
+| Weighted default rate | 1.7259% → 1.6810% |
+| Unweighted default rate | 25.99% → 25.48% |
+| Score PSI | 0.0003 |
+| Status counts | {'green': 199, 'yellow': 1} |
+| Retrain review | not triggered |
+
+Feature PSI is unweighted; score PSI and action mix are population-weighted. The
+current split is a temporal holdout from the same labelled month, not true
+out-of-time validation. The retrain trigger is a review trigger, not an
+automatic retrain.
+
+## 12. Explainability
+
+Top features by mean absolute SHAP:
+
+| Feature | Family | Mean |SHAP| | Share |
+| --- | ---: | ---: | ---: |
+| P_2 | Payment | 1.096 | 19.7% |
+| payment_to_balance_ratio | Engineered/Other | 0.371 | 6.7% |
+| P_2_rolling3_mean | Payment | 0.232 | 4.2% |
+| B_4 | Balance | 0.171 | 3.1% |
+| D_39 | Delinquency | 0.165 | 3.0% |
+| S_3 | Spend | 0.153 | 2.8% |
+| D_45 | Delinquency | 0.120 | 2.2% |
+| B_3 | Balance | 0.115 | 2.1% |
+| D_43 | Delinquency | 0.115 | 2.1% |
+| D_50 | Delinquency | 0.102 | 1.8% |
+
+Family contribution:
+
+| Family | Mean |SHAP| | Share |
+| --- | ---: | ---: |
+| Delinquency (D) | 1.926 | 34.7% |
+| Payment (P) | 1.441 | 26.0% |
+| Balance (B) | 1.069 | 19.3% |
+| Spend (S) | 0.438 | 7.9% |
+| Engineered / Other | 0.371 | 6.7% |
+| Risk (R) | 0.306 | 5.5% |
+
+SHAP is computed on the saved LightGBM model with `TreeExplainer` and 5,000
+customers. Values are in raw model output (log-odds/margin). Reason codes are
+family-level because the Amex features are anonymized. The 25 examples in
+`reports/reason_codes.csv` span the full Restrict band, not only the highest-PD
+tail, so the table is representative of the accounts the policy actually exits.
+
+## 13. Reproducibility
+
+```bash
+make pipeline   # full retrain from data/raw
+make tableau    # regenerate Tableau aggregates
+make demo       # rebuild docs/index.html
+make verify     # tests + docs check + demo rebuild
+```
+
+The committed artifacts and reports make the fast path work without the 6.2 GB
+parquet. The full pipeline needs the Kaggle CSVs in `data/raw/`.
+
+## 14. Caveats
+
+1. **No test labels.** The public test set cannot support performance claims.
+2. **Assumed economics.** Margin, LGD, and exposure are labelled scenarios.
+3. **No out-of-time validation.** Monitoring is a temporal holdout, not next-year drift.
+4. **Anonymized features.** No fair-lending or adverse-action claim.
+5. **No production system.** No feature store, latency test, or model-risk sign-off.
+6. **SHAP is not causal.** It attributes model output, not intervention effects.
+7. **Binary minimax is a strong baseline.** The comparison is not a straw man.
+
+See [`MODEL_CARD.md`](MODEL_CARD.md), [`DECISION_MEMO.md`](DECISION_MEMO.md),
+and [`TABLEAU_DASHBOARD_GUIDE.md`](TABLEAU_DASHBOARD_GUIDE.md).

@@ -1,179 +1,179 @@
-# Interview Defense Guide
+# Interview Defense
 
-This document prepares you for technical grilling on every design choice in the project. It contains 5 questions per phase across all 10 phases.
+A technical defense of the choices in Breakpoint. The answers are written for a risk-model reviewer, not a general audience. Every number is reproducible from `reports/metrics.json` and `reports/policy.json`.
 
-## Phase 0: Project Setup & Architecture
-**Q1: Why did you use a Makefile for a Python project?**
-*A: It standardizes the execution pipeline. Instead of relying on a complex bash script or asking users to run Python scripts in a specific order, `make all` guarantees the DAG (Data -> Features -> Train -> Evaluate) executes correctly.*
+## 1. Problem framing
 
-**Q2: How do you manage configurations across different scripts?**
-*A: I use YAML files (`settings.yaml` and `economic_scenarios.yaml`) loaded via a central `src/config.py`. This ensures magic numbers (like the 20x negative weight) are defined exactly once, preventing silent mathematical errors.*
+**Why three actions instead of approve/decline?**
 
-**Q3: Why not just use Jupyter Notebooks?**
-*A: Notebooks are great for EDA but terrible for production pipelines. They suffer from hidden state and out-of-order execution. I structured this as a modular Python package (`src/`) so it can be unit-tested, version-controlled cleanly, and run via CI/CD.*
+Because the economic action is not binary. A safe existing account can profitably take more line; a marginal account should stay where it is; a risky account should exit. Collapsing those into approve/decline forces one exposure and one margin for every approved account, which leaves profit on the table. The three-action policy makes the action and the exposure change explicit.
 
-**Q4: How did you ensure your environment is reproducible?**
-*A: I provided a strict `requirements.txt` with exact versions (e.g., LightGBM, DuckDB, SHAP) and automated the setup process using `make setup` in a virtual environment. I also seed all random operations.*
+**Why not just optimize AUC?**
 
-**Q5: What is the purpose of the `.github/workflows/ci.yml`?**
-*A: It enforces Continuous Integration. On every push to main, it provisions an Ubuntu runner, installs dependencies, and runs the PyTest suite. This ensures I never push broken code or data leakage regressions.*
+AUC is rank-only. The policy needs calibrated probabilities because the cutoffs are probability thresholds. A model with the same AUC but worse calibration can choose the wrong action and lose money. Calibration is therefore part of the product, not a cosmetic afterthought.
 
-## Phase 1: Data Engineering & SQL Features
-**Q1: How did you ensure no future leakage in your rolling window features?**
-*A: I strictly defined my SQL windows as `ROWS BETWEEN X PRECEDING AND CURRENT ROW`. I also wrote a regex-based pytest (`test_leakage.py`) that fails the build if the word `FOLLOWING` ever appears in a window definition.*
+**What is the actual decision unit?**
 
-**Q2: Why compute features in SQL (DuckDB) rather than Pandas?**
-*A: The raw dataset was 47GB of CSVs. Pandas would throw an Out-Of-Memory (OOM) error on most laptops. DuckDB allowed me to stream the data out-of-core directly into compressed Parquet files, executing complex aggregations with minimal RAM.*
+A customer-level account review, using 13 months of statement behaviour. It is not an origination model and it is not a new-customer acquisition model.
 
-**Q3: A customer has only 3 statements. What happens to your 6-statement rolling mean?**
-*A: SQL window functions handle this gracefully. `BETWEEN 5 PRECEDING AND CURRENT ROW` will take the average of the 3 available rows. It doesn't output NULL, it calculates the mean over the available history up to that point.*
+## 2. Data
 
-**Q4: Why did you downcast float64 to float32?**
-*A: Credit bureau features rarely need double-precision floats. Downcasting to float32 cut the memory footprint of the feature matrix in half with zero loss in predictive performance.*
+**How large is the dataset?**
 
-**Q5: How do you handle the chronological ordering of customer statements?**
-*A: Before applying any window functions, the DuckDB query partitions by `customer_ID` and strictly orders by `S_2` (the statement date). This ensures historical features are mathematically sound.*
+458,913 labelled training customers and 200 model features: 198 numeric plus two categorical (`D_63`, `D_64`). `S_2` is the statement date; it is used only for the temporal monitoring split.
 
-## Phase 2: Modeling & Metrics
-**Q1: Why did you apply a 20x weight to the negative class?**
-*A: The Amex dataset artificially subsampled the negative class (good accounts) by a factor of 20 (5% retention). If I trained without applying this weight, the predicted probabilities would be miscalibrated, ruining downstream profit optimization.*
+**Why is the reported default rate 1.717% when the sample is 25.89% defaults?**
 
-**Q2: Why use LightGBM instead of XGBoost or a Neural Network?**
-*A: LightGBM natively handles NaN values (very common in credit data) and categorical features without requiring massive one-hot encoding matrices. It builds trees histogram-wise, making it exceptionally fast for 400+ features and 450k rows.*
+The Kaggle competition kept only 5% of non-defaults. The 20× weight on non-defaults restores the population default rate. The unweighted 25.89% is a sampling artifact, not the portfolio default rate. The README, model card, and monitoring report label which rate is weighted.
 
-**Q3: Did you run a statistical test on the AUC difference between LR and LightGBM?**
-*A: Yes, I implemented a fast DeLong test. However, it highlighted a major flaw: standard DeLong implementations compute variance based on unweighted rank-sums. Applying it to our 20x subsampled dataset yields an invalid p-value. This proved why we must rely on Expected Profit.*
+**How do you prevent future leakage?**
 
-**Q4: Why include a Logistic Regression baseline if you knew LightGBM would win?**
-*A: To quantify the "complexity premium." By comparing LightGBM to LR, I can prove to stakeholders exactly how much extra profit the non-linear model generates, justifying the added complexity in deployment.*
+SQL windows use only `PRECEDING` and `CURRENT ROW`; `tests/test_leakage.py` fails if `FOLLOWING` appears. The feature table is checked for one row per customer. The split is customer-level, not statement-level, so a customer cannot appear in both train and validation.
 
-**Q5: How did you evaluate the model to prevent overfitting?**
-*A: I used 5-Fold Stratified Cross Validation. This ensures the 20x class imbalance is preserved across folds, and out-of-fold (OOF) predictions are strictly separated from training data.*
+**Why DuckDB?**
 
-## Phase 3: Calibration
-**Q1: Why calibrate the model if your AUC was already 0.958?**
-*A: AUC only measures ranking (who is more risky). But Expected Profit requires absolute probabilities (is the risk exactly 4.2%?). An uncalibrated model with perfect AUC can still lose millions if it systematically over- or under-predicts default probabilities.*
+The raw CSVs are large and the feature build is a windowed aggregation. DuckDB streams the conversion out of core and writes parquet without loading the full dataset into pandas. The processed table is then small enough for model training.
 
-**Q2: What is Expected Calibration Error (ECE)?**
-*A: ECE bins predictions into deciles and measures the average absolute difference between the predicted probability and the actual default rate in that bin. We want it as close to 0 as possible.*
+## 3. Model
 
-**Q3: Why did Isotonic Regression beat Platt Scaling?**
-*A: Platt Scaling assumes the model's scores can be mapped to probabilities using a sigmoid function (logistic regression). LightGBM trees often produce non-sigmoid score distributions. Isotonic Regression is non-parametric (a step function) and perfectly fits complex tree outputs.*
+**Why LightGBM?**
 
-**Q4: Can calibration hurt AUC?**
-*A: Both Isotonic and Platt scaling are monotonic transformations. They preserve the exact rank ordering of the predictions, so AUC remains mathematically identical. They only adjust the absolute scale.*
+It handles missing values and categorical features natively, trains quickly on 458k rows, and is a strong tabular baseline. The logistic regression baseline is kept to quantify the complexity premium rather than to claim LightGBM is universally better.
 
-**Q5: How do you calibrate out-of-fold predictions without leakage?**
-*A: You must fit the calibrator on the hold-out validation fold, not the training fold. My pipeline calibrates the validation fold using a model trained on the training fold, ensuring strict separation.*
+**What are the actual hyperparameters?**
 
-## Phase 4: Economics & Decisioning
-**Q1: What is the exact formula for expected profit per account?**
-*A: Expected Profit = $(1 - p) \times M - p \times L$, where $p$ is the probability of default, $M$ is the margin, and $L$ is the loss given default. The optimal cutoff is $p < \frac{1}{r + 1}$, where $r = L/M$.*
+282 final trees, learning rate 0.05, 31 leaves, max depth 6, min child samples 20, 0.8 row and column subsampling, 75 early-stopping rounds, 5-fold stratified CV. There was no Optuna search and no GroupKFold in the final run.
 
-**Q2: Why is F1-score a terrible cutoff for credit risk?**
-*A: F1 assumes false positives and false negatives have equal costs (or costs tied to class balance). In our stress scenario, a default costs 45 times more than a good account margin. F1 ignored this, resulting in a 31.8% profit loss.*
+**How did you test the AUC difference?**
 
-**Q3: Explain MiniMax Regret to a non-technical stakeholder.**
-*A: "We don't know exactly what the economy will do next year. Instead of guessing, we found a 'safe' cutoff. The MiniMax Regret policy guarantees that whether the economy booms or crashes, we will never lose more than 4.7% of our maximum possible profit."*
+Two ways. The unweighted DeLong test is reported as a supplementary check; the primary test is a class-stratified weighted bootstrap of the AUC difference, which respects the 20× negative-class design weight. The weighted bootstrap difference is **+0.0029** with a 95% interval of **[+0.0027, +0.0031]**. The old project narrative that DeLong is "invalid" was too strong; the correct statement is that the unweighted test is supplementary and the weighted bootstrap is primary.
 
-**Q4: How did you calculate fractional regret?**
-*A: Fractional Regret = `(Maximum Possible Profit - Actual Profit) / Maximum Possible Profit`. We normalize it so a high-dollar Aggressive scenario doesn't completely overshadow a low-dollar Stress scenario.*
+**Did calibration change AUC?**
 
-**Q5: What does the Sensitivity Sweep prove?**
-*A: It proves that as the economy shifts (cost ratio `r` moves from 1 to 50), statistical heuristics randomly collapse, while the MiniMax policy stays consistently near 100% of the theoretical maximum profit.*
+Barely. Isotonic regression is monotonic, so the calibrated AUC is **0.9584** versus **0.9585** raw. The gain is in Brier and ECE, not ranking.
 
-## Phase 5: Statistical Rigor
-**Q1: Why use a Bootstrap Confidence Interval for profit instead of a simple t-test?**
-*A: Credit profit distributions are incredibly heavy-tailed. A standard t-test assumes a normal distribution and underestimates variance. Bootstrapping makes no distributional assumptions.*
+## 4. Calibration
 
-**Q2: How did you implement the Paired Bootstrap?**
-*A: I resampled the *customers* (with replacement) 1000 times. For each sample, I computed the profit of the MiniMax policy minus the profit of the F1 policy. This yields a distribution of the *difference* in profit.*
+**Why isotonic rather than Platt?**
 
-**Q3: What is Champion-Challenger Test Design?**
-*A: It's an A/B test for credit models. The Champion is the existing policy, the Challenger is the new MiniMax policy. You randomly assign accounts to each to measure true causal lift.*
+Platt assumes a sigmoid mapping. LightGBM's tree scores are not sigmoid-shaped. Isotonic is non-parametric and won on Brier and ECE in this dataset: Brier **0.012055** vs **0.012924** for Platt, quantile ECE **0.0075%** vs **1.3852%**.
 
-**Q4: Why simulate Power Analysis instead of using a formula?**
-*A: Standard power formulas (like Cohen's d) assume normality. By simulating the A/B test using actual bootstrap samples of our heavy-tailed predictions, we get a much more accurate estimate of required sample size.*
+**How is calibration cross-fitted?**
 
-**Q5: What is the risk of deploying without an A/B test?**
-*A: "Winner's Curse" and selection bias. Our offline expected profit assumes the future population looks exactly like the past. A live champion-challenger test proves the model actually generates real-world cash.*
+For each of the five folds, the calibrator is fit on the other folds and applied to the held-out fold. The final calibrator is then fit on all OOF rows for scoring. This avoids evaluating a calibrator on the rows used to fit it.
 
-## Phase 6: Monitoring & Drift
-**Q1: What is the Population Stability Index (PSI)?**
-*A: PSI measures how much a feature's distribution has shifted between training and production. It bins the data and computes `sum((Actual% - Expected%) * ln(Actual% / Expected%))`.*
+**Why does ECE use quantile bins?**
 
-**Q2: What is your threshold for triggering a retrain?**
-*A: A standard industry threshold is PSI > 0.25 for severe shift. I trigger a review if >10% of features drift, or if any 3 features in the critical Delinquency/Balance families drift.*
+Quantile bins put roughly equal population weight in each bin, which is more stable for a heavily skewed PD distribution. Uniform-bin ECE is also reported in `reports/metrics.json` as a robustness check.
 
-**Q3: Why calculate PSI on a 1% sample?**
-*A: Due to disk space and memory constraints on a local machine, processing the full test set repeatedly was unfeasible. In production, we would compute this on a 100% daily or weekly snapshot.*
+## 5. Policy optimization
 
-**Q4: Can a model degrade even if PSI is 0?**
-*A: Yes, if the relationship between the features and the target changes (concept drift). PSI only measures feature drift (covariate shift).*
+**What exactly is optimized?**
 
-**Q5: How would you monitor concept drift in credit?**
-*A: Because defaults take 6-12 months to mature, we cannot monitor concept drift immediately. We would monitor early warning indicators (e.g., 30-days past due rates at 3 months on book).*
+Worst-case fractional regret across the four economic scenarios, over a joint grid of Grow and Restrict cutoffs. The grid combines log-spaced points for the low-PD region with score quantiles for the bulk. The constraints are a 60% Grow cap, a 10% Hold floor, and a 10% expected-loss increase limit.
 
-## Phase 7: Explainability
-**Q1: How do you provide reason codes if your features are anonymized?**
-*A: Using SHAP, we extract raw feature importances. Even though we don't know exactly what `D_39` is, we know `D` stands for Delinquency. We aggregated SHAP values by prefix families to provide categories like "Recent Delinquency Indicators".*
+**Why not a single cutoff?**
 
-**Q2: Why use SHAP TreeExplainer instead of exact SHAP or LIME?**
-*A: LIME is a linear approximation and can be unstable. Exact SHAP is exponentially slow. TreeExplainer uses the internal structure of LightGBM trees to compute exact SHAP values in polynomial time.*
+A single cutoff cannot express Grow/Hold/Restrict. The binary minimax baseline is still optimized properly — it is the best single cutoff under the same scenarios — so the comparison is not a straw man.
 
-**Q3: How do you handle negative SHAP values for reason codes?**
-*A: Reason codes are for explaining why an account was rejected or restricted. Therefore, we only look at features with positive SHAP values (features that pushed the predicted default risk *higher*).*
+**What are the cutoffs and the action mix?**
 
-**Q4: What is the difference between Global and Local explainability?**
-*A: Global explainability (Feature Importance plots) tells us how the model works on average. Local explainability (Reason Codes for one applicant) tells us why a specific decision was made.*
+Grow ≤ **0.000827**, Hold ≤ **0.040517**, Restrict above **0.040517**. The population-weighted mix is **60.0% Grow / 31.1% Hold / 9.0% Restrict**. Bad rates are **0.02% / 0.90% / 15.92%**.
 
-**Q5: Can SHAP prove causality?**
-*A: No. SHAP attributes the model's prediction to input features based on correlation. If 'high balance' correlates with default, SHAP highlights it, but it doesn't prove that lowering the balance prevents default.*
+**What does worst-case regret mean here?**
 
-## Phase 8: Dashboards & Reporting
-**Q1: Why did you build an export script instead of connecting Tableau directly to DuckDB?**
-*A: BI tools struggle with 400-column, 450k-row raw datasets. The export script pre-aggregates the profit curves, regret maps, and PSI metrics into tiny, fast CSVs so the executive dashboard loads instantly.*
+For each scenario, the oracle is the best constrained three-action policy for that scenario. Regret is `(oracle profit − policy profit) / oracle profit`. The selected policy minimizes the maximum regret across scenarios. Its worst case is **1.83%** in stress; binary minimax's worst case is **4.26%**.
 
-**Q2: What are the 4 main panels of your Executive Dashboard?**
-*A: 1. Profit Curves under 4 economic scenarios. 2. Regret Heatmap showing robustness. 3. Calibration reliability plot. 4. Drift Monitoring summary.*
+**Why is the Grow cap binding?**
 
-**Q3: Who is the audience for this dashboard?**
-*A: Chief Risk Officers and Portfolio Managers. They don't care about AUC; they care about downside protection, margin, and when the model will break.*
+At a 60% cap, the optimizer chooses a Grow cutoff that puts almost exactly 60% of the population in Grow. Raising the cap to 80% lowers worst-case regret to **1.66%**, but increases exposure and distributional risk. The cap is a business choice, not a modelling artifact.
 
-**Q4: Why not use a Python dashboarding tool like Streamlit?**
-*A: Streamlit is great for technical prototypes, but Tableau/PowerBI are the enterprise standard in finance for executive reporting.*
+## 6. Uncertainty
 
-**Q5: How do you prevent stakeholders from misinterpreting the Profit numbers?**
-*A: The dashboard explicitly labels all numbers as "Simulated Expected Profit" based on specified margin assumptions, not actual historical P&L.*
+**Why bootstrap rather than a t-test?**
 
-## Phase 9: Engineering Hygiene & Tests
-**Q1: What does `test_determinism.py` do?**
-*A: It verifies that running the pipeline twice yields the exact same model and predictions. It catches unseeded random number generators or non-deterministic SQL aggregations.*
+Profit is a heavy-tailed, weighted functional of the score distribution. A paired bootstrap resamples customers with replacement, preserves the pairing and the class weight, and makes no normal approximation. The 1,000-replicate intervals are tight because the estimate uses 458,913 labelled accounts.
 
-**Q2: Why write unit tests for economics?**
-*A: The expected profit math is the core thesis of the project. `test_economics.py` asserts that profit is strictly monotonically decreasing as Loss Given Default (LGD) increases, catching basic arithmetic bugs.*
+**What does the bootstrap show?**
 
-**Q3: What is the value of `pytest` fixtures?**
-*A: In `conftest.py`, I load the 1% sample data once into memory and pass it to multiple tests. This prevents tests from taking 5 minutes to run due to repeated disk I/O.*
+The action-vs-binary advantage is positive in every replicate in every scenario. Stress: **+$102.0M**, 95% CI **[$100.6M, $103.5M]**. Conservative: **+$80.1M** **[$79.2M, $80.9M]**. Moderate: **+$169.5M** **[$167.8M, $171.0M]**. Aggressive: **+$321.4M** **[$318.2M, $324.5M]**.
 
-**Q4: How does your CI/CD pipeline handle secrets?**
-*A: This specific public repo doesn't require secrets, but in production, API keys (e.g., for database access or MLflow tracking) are stored in GitHub Secrets and injected into the runner environment.*
+**Why run a power analysis?**
 
-**Q5: If I clone this repo, what is the exact command to replicate your results?**
-*A: `make all`. It sets up the environment, converts the data, builds features, trains the models, and generates every plot and markdown report automatically.*
+Because an offline profit difference is not a test design. The simulation draws from the population-weighted score/label distribution and compares two arms. It answers: how many accounts would a champion/challenger test need? The answer is roughly **17,610 per arm** for 80% power; 25,000 gives **93.4%** and 50,000 gives **99.6%**.
 
-## Phase 10: Deliverables & Communication
-**Q1: Why write a Decision Memo?**
-*A: Data Scientists often fail because they only communicate in technical metrics. A 1-page Decision Memo translates an AUC of 0.958 into a clear business recommendation: deploy the 0.0500 threshold to protect against recession.*
+**What are the limits of the confidence intervals?**
 
-**Q2: What is a Model Card?**
-*A: Introduced by Google, a Model Card is a standardized document detailing the model's intended use, training data, ethical considerations, and known limitations. It ensures transparency for compliance teams.*
+They describe sampling uncertainty in this labelled dataset. They do not cover model risk, economic-regime uncertainty, or the possibility that the future population differs from the training population.
 
-**Q3: What is the most critical limitation of this project?**
-*A: The lack of real dollar values. We used assumed economic scenarios. While the MiniMax methodology is robust, the actual 0.0500 cutoff cannot be blindly deployed without plugging in Amex's true margins and LGDs.*
+## 7. Monitoring
 
-**Q4: How did you ensure every number in your resume bullets is verifiable?**
-*A: The `RESULTS.md` file acts as the source of truth. Every metric cited in the resume (e.g., 31.8% profit loss, 99.8% power with 10k accounts) is generated by the pipeline and logged there.*
+**What is PSI?**
 
-**Q5: How would this project change if you built it for a real bank today?**
-*A: I would use a non-anonymized dataset to build a proper Weight of Evidence (WoE) scorecard for regulatory compliance, integrate macroeconomic variables (like interest rates), and deploy via a real-time feature store.*
+Population Stability Index: `sum((actual% − expected%) × ln(actual% / expected%))` over bins defined on the reference distribution. It measures distribution shift, not predictive performance.
+
+**What is the monitoring split?**
+
+The earliest 80% of accounts by statement date versus the latest 20%. It is a temporal holdout from the same labelled month, not a true out-of-time validation set. The report says so.
+
+**Why are feature PSI and score PSI weighted differently?**
+
+Feature PSI is unweighted because it describes the observed account-level feature distribution. Score PSI and the action mix are population-weighted with the 20× negative-class weight so they match the portfolio the policy serves. Mixing the two without labelling would be misleading.
+
+**What is the retrain trigger?**
+
+More than 10% of features with PSI > 0.25, or at least three delinquency/balance features above 0.25, or score PSI > 0.25, or any action share moving more than 5 percentage points. It is a review trigger, not an automatic retrain.
+
+**What did the current report find?**
+
+Score PSI **0.0003**, **199 green / 1 yellow** features, weighted default rate **1.7259% → 1.6810%**, action mix stable within **0.34 percentage points**, no retrain trigger. That is evidence of stability in this window, not a guarantee.
+
+## 8. Explainability
+
+**How are reason codes generated?**
+
+`shap.TreeExplainer` on the saved LightGBM model. For each restricted account in the report, the top positive SHAP contributions become reason codes; the 25 examples span the full Restrict band, not only the 100%-PD tail. The SHAP values are in raw model output (log-odds/margin), not probability units.
+
+**Why not train a proxy model on a sample?**
+
+The old version did that. A proxy explains the proxy, not the deployed model. The current version loads the persisted model, feature contract, category levels, and calibrator.
+
+**What are the top features?**
+
+`P_2`, `payment_to_balance_ratio`, `P_2_rolling3_mean`, `B_4`, `D_39`, `S_3`, `D_45`, `B_3`. Delinquency, payment, and balance families account for roughly 80% of total mean absolute SHAP.
+
+**Are these regulator-ready adverse-action reasons?**
+
+No. The features are anonymized, and the reason codes are family-level. A production adverse-action process needs named features, business descriptions, and legal review.
+
+## 9. Tableau and reporting
+
+**What does the Tableau export contain?**
+
+12 aggregate CSVs: threshold curve, policy markers, action mix, operating characteristics, score histogram, calibration, sensitivity, drift, KPI, policy card, bootstrap, and power. `manifest.json` records row counts and columns. All are generated from canonical reports.
+
+**Why not connect Tableau directly to the 6.2 GB parquet?**
+
+A reviewer needs a fast, aggregate, privacy-safe workbook. The 257 KB threshold curve and the small KPI tables load instantly and contain no customer-level data. The full data stays in the reproducible pipeline.
+
+**Is the dashboard published?**
+
+The repository prepares the data and a build guide. Publishing to Tableau Public requires the owner's Tableau account, so the repo does not claim a live URL. The static reviewer demo in `docs/index.html` is the no-account fallback.
+
+## 10. Engineering and limitations
+
+**What does the test suite cover?**
+
+48 tests: profit algebra and action economics, threshold grids, minimax behavior, guardrails, corrected DeLong, weighted bootstrap AUC, calibration bins/ECE, PSI and drift triggers, scoring contract, report invariants, determinism, and leakage.
+
+**What is committed vs generated?**
+
+The model artifacts, reports, figures, Tableau aggregates, and static demo are committed so a reviewer can run the fast path. The raw data, parquet files, processed features, and OOF predictions are not committed.
+
+**What is the biggest limitation?**
+
+The economics are assumed, and the test labels are unavailable. The policy is robust across four labelled scenarios, but the dollar levels are illustrative. A real deployment needs Amex's actual margins, losses, and exposure, plus fair-lending and model-risk review.
+
+**What would you do differently in a bank?**
+
+Use named features and a regulatory-grade reason-code process; add a feature store and real-time scoring contract; run a true out-of-time validation; add protected-class fairness testing; and put the policy through model-risk validation and a shadow-mode champion/challenger test before any line change.

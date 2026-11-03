@@ -30,6 +30,12 @@ SEED: int = int(_settings["seed"])
 NEGATIVE_WEIGHT: int = int(_settings["negative_weight"])
 TRAIN_VAL_SPLIT_RATIO: float = float(_settings["train_val_split_ratio"])
 CV_FOLDS: int = int(_settings["cv_folds"])
+EARLY_STOPPING_ROUNDS: int = int(_settings.get("early_stopping_rounds", 75))
+BOOTSTRAP_AUC_REPS: int = int(_settings.get("bootstrap_auc_reps", 300))
+CALIBRATION_METHOD: str = str(_settings.get("calibration_method", "isotonic"))
+CALIBRATION_FOLDS: int = int(_settings.get("calibration_folds", 5))
+CALIBRATION_BINS: int = int(_settings.get("calibration_bins", 12))
+MODEL_CONFIG: dict[str, Any] = _settings.get("model", {})
 
 ECONOMIC_SCENARIOS: dict[str, dict[str, Any]] = _economics["scenarios"]
 ACTION_ECONOMICS: dict[str, dict[str, Any]] = _economics["actions"]

@@ -1,8 +1,14 @@
 data/raw/*
 data/parquet/*
 data/processed/*
-!data/**/.gitkeep
+!data/raw/.gitkeep
+!data/parquet/.gitkeep
+!data/processed/.gitkeep
+!data/demo/.gitkeep
 *.csv
+!reports/*.csv
+!dashboards/data/*.csv
+!data/demo/*.csv
 *.parquet
 __pycache__/
 *.pyc
@@ -11,3 +17,4 @@ __pycache__/
 venv/
 env/
 .pytest_cache/
+.ruff_cache/

@@ -1,6 +1,6 @@
 import pytest
 import numpy as np
-from src.decision.optimal_thresholds import compute_profit
+from src.economics.profit_curve import compute_profit
 from src.config import NEGATIVE_WEIGHT
 
 def test_profit_weighting():

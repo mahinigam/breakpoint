@@ -1,0 +1,2 @@
+binary_minimax_cutoff,grow_cutoff,hold_upper_cutoff,action_worst_case_regret_pct,binary_worst_case_regret_pct,max_grow_share,min_hold_share,max_expected_loss_increase,grow_margin_multiplier,grow_exposure_multiplier,hold_margin_multiplier,hold_exposure_multiplier
+0.0531240049964486,0.0008270590919461555,0.040517027094208305,1.8341,4.2649,0.6,0.1,0.1,1.1,1.5,1.0,1.0

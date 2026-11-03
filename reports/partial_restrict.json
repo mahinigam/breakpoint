@@ -1,0 +1,112 @@
+{
+  "description": "Restrict modelled as a 50% line reduction instead of a full exit",
+  "grow_cutoff": 0.0008270590919461555,
+  "restrict_cutoff": 0.04660944857757969,
+  "scenarios": {
+    "aggressive": {
+      "action_mix": {
+        "grow": 0.5999850011444213,
+        "hold": 0.32116220034078324,
+        "restrict": 0.0788527985147954
+      },
+      "bad_rate_by_action": {
+        "grow": 0.00021506603827886478,
+        "hold": 0.010110626596095044,
+        "restrict": 0.17493581673547698
+      },
+      "counts": {
+        "bad_grow": 893.0,
+        "bad_hold": 22472.0,
+        "bad_restrict": 95463.0,
+        "good_grow": 4151320.0,
+        "good_hold": 2200140.0,
+        "good_restrict": 450240.0
+      },
+      "expected_loss": 143303987.29674947,
+      "exposure": 43618915000.0,
+      "grow_cutoff": 0.0008270590919461555,
+      "profit": 6848626000.0,
+      "regret": 0.022185982701069973,
+      "restrict_cutoff": 0.04660944857757969
+    },
+    "conservative": {
+      "action_mix": {
+        "grow": 0.5999850011444213,
+        "hold": 0.32116220034078324,
+        "restrict": 0.0788527985147954
+      },
+      "bad_rate_by_action": {
+        "grow": 0.00021506603827886478,
+        "hold": 0.010110626596095044,
+        "restrict": 0.17493581673547698
+      },
+      "counts": {
+        "bad_grow": 893.0,
+        "bad_hold": 22472.0,
+        "bad_restrict": 95463.0,
+        "good_grow": 4151320.0,
+        "good_hold": 2200140.0,
+        "good_restrict": 450240.0
+      },
+      "expected_loss": 286607974.59349895,
+      "exposure": 43618915000.0,
+      "grow_cutoff": 0.0008270590919461555,
+      "profit": 1112170400.0,
+      "regret": 0.0002049625386012781,
+      "restrict_cutoff": 0.04660944857757969
+    },
+    "moderate": {
+      "action_mix": {
+        "grow": 0.5999850011444213,
+        "hold": 0.32116220034078324,
+        "restrict": 0.0788527985147954
+      },
+      "bad_rate_by_action": {
+        "grow": 0.00021506603827886478,
+        "hold": 0.010110626596095044,
+        "restrict": 0.17493581673547698
+      },
+      "counts": {
+        "bad_grow": 893.0,
+        "bad_hold": 22472.0,
+        "bad_restrict": 95463.0,
+        "good_grow": 4151320.0,
+        "good_hold": 2200140.0,
+        "good_restrict": 450240.0
+      },
+      "expected_loss": 214955980.9451242,
+      "exposure": 43618915000.0,
+      "grow_cutoff": 0.0008270590919461555,
+      "profit": 3281227000.0,
+      "regret": 0.011181971667998912,
+      "restrict_cutoff": 0.04660944857757969
+    },
+    "stress": {
+      "action_mix": {
+        "grow": 0.5999850011444213,
+        "hold": 0.32116220034078324,
+        "restrict": 0.0788527985147954
+      },
+      "bad_rate_by_action": {
+        "grow": 0.00021506603827886478,
+        "hold": 0.010110626596095044,
+        "restrict": 0.17493581673547698
+      },
+      "counts": {
+        "bad_grow": 893.0,
+        "bad_hold": 22472.0,
+        "bad_restrict": 95463.0,
+        "good_grow": 4151320.0,
+        "good_hold": 2200140.0,
+        "good_restrict": 450240.0
+      },
+      "expected_loss": 644867942.8353727,
+      "exposure": 87237830000.0,
+      "grow_cutoff": 0.0008270590919461555,
+      "profit": 754455400.0,
+      "regret": 0.023352889868340963,
+      "restrict_cutoff": 0.04660944857757969
+    }
+  },
+  "worst_case_regret": 0.023352889868340963
+}
