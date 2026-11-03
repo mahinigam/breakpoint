@@ -1,54 +1,100 @@
-import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
+"""Regret map: fractional profit loss by scenario and cutoff."""
+
+from __future__ import annotations
+
 from pathlib import Path
 
-def plot_regret_map(thresholds, scenario_profits, output_dir):
-    """
-    Plots a heatmap of fractional regret across cutoffs and economic scenarios.
-    Regret(τ, r) = OracleProfit(r) − ActualProfit(τ, r)
+import matplotlib.pyplot as plt
+import numpy as np
+import seaborn as sns
+
+
+def plot_regret_map(
+    regret_matrix: np.ndarray,
+    thresholds: np.ndarray,
+    scenarios: list[str],
+    output_dir: str | Path,
+    minimax_threshold: float | None = None,
+    filename: str = "regret_map.png",
+) -> np.ndarray:
+    """Plot a scenario x threshold regret heatmap plus the worst-case curve.
+
+    Parameters
+    ----------
+    regret_matrix:
+        Shape ``(n_scenarios, n_thresholds)`` of fractional regret.
+    thresholds:
+        Cutoffs corresponding to the columns.
+    scenarios:
+        Row labels.
+    minimax_threshold:
+        If provided, the closest threshold is highlighted.
     """
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
-    
-    scenarios = list(scenario_profits.keys())
-    
-    # We construct a matrix: Scenarios (rows) x Thresholds (cols)
-    regret_matrix = []
-    
-    for name in scenarios:
-        data = scenario_profits[name]
-        max_p = data["max_profit"]
-        profits = data["profits"]
-        
-        # Fractional regret
-        regret = (max_p - profits) / max_p
-        regret_matrix.append(regret)
-        
-    regret_matrix = np.array(regret_matrix)
-    
-    # Downsample thresholds for the heatmap so it's readable
-    n_ticks = 10
-    idx_to_plot = np.linspace(0, len(thresholds)-1, n_ticks, dtype=int)
-    
-    plot_matrix = regret_matrix[:, idx_to_plot]
-    plot_thresholds = thresholds[idx_to_plot]
-    
-    plt.figure(figsize=(10, 6))
+
+    regret_matrix = np.asarray(regret_matrix, dtype=float)
+    thresholds = np.asarray(thresholds, dtype=float)
+
+    n_ticks = min(14, len(thresholds))
+    index = np.unique(np.linspace(0, len(thresholds) - 1, n_ticks, dtype=int))
+    plot_matrix = regret_matrix[:, index]
+    plot_thresholds = thresholds[index]
+
+    worst_case = np.max(regret_matrix, axis=0)
+    minimax_index = int(np.argmin(worst_case))
+
+    fig = plt.figure(figsize=(14, 9))
+    grid = fig.add_gridspec(2, 1, height_ratios=[2.1, 1.0], hspace=0.35)
+
+    ax_heat = fig.add_subplot(grid[0])
     sns.heatmap(
-        plot_matrix, 
-        annot=True, 
-        fmt=".1%", 
-        cmap="YlOrRd", 
-        xticklabels=[f"{t:.2f}" for t in plot_thresholds],
-        yticklabels=scenarios
+        plot_matrix,
+        annot=True,
+        fmt=".1%",
+        cmap="YlOrRd",
+        xticklabels=[f"{value:.3f}" for value in plot_thresholds],
+        yticklabels=[name.title() for name in scenarios],
+        ax=ax_heat,
+        cbar_kws={"label": "Fractional regret"},
     )
-    plt.title("Regret Map: Fractional Profit Loss by Scenario")
-    plt.xlabel("Probability Threshold")
-    plt.ylabel("Economic Scenario")
-    plt.tight_layout()
-    
-    plt.savefig(output_dir / "regret_map.png", dpi=300)
-    plt.close()
-    
+    ax_heat.set_title("Regret map: profit left on the table")
+    ax_heat.set_xlabel("Probability cutoff")
+    ax_heat.set_ylabel("Economic scenario")
+
+    if minimax_threshold is not None:
+        nearest = int(np.argmin(np.abs(thresholds - minimax_threshold)))
+        if nearest in index:
+            position = int(np.where(index == nearest)[0][0])
+            ax_heat.axvline(position + 0.5, color="#111111", linewidth=2.5)
+            ax_heat.text(
+                position + 0.55,
+                -0.15,
+                f"minimax {minimax_threshold:.4f}",
+                color="#111111",
+                fontsize=9,
+                fontweight="bold",
+            )
+
+    ax_line = fig.add_subplot(grid[1])
+    ax_line.plot(thresholds, worst_case * 100, color="#111111", linewidth=2)
+    ax_line.axvline(
+        thresholds[minimax_index],
+        color="#d62728",
+        linestyle="--",
+        linewidth=1.5,
+        label=f"Minimax cutoff = {thresholds[minimax_index]:.4f}",
+    )
+    ax_line.set_title(
+        f"Worst-case regret across scenarios "
+        f"({worst_case[minimax_index] * 100:.1f}% at the minimax cutoff)"
+    )
+    ax_line.set_xlabel("Probability cutoff")
+    ax_line.set_ylabel("Worst-case regret (%)")
+    ax_line.grid(True, linestyle="--", alpha=0.4)
+    ax_line.legend(frameon=False)
+
+    fig.tight_layout()
+    fig.savefig(output_dir / filename, dpi=300, bbox_inches="tight")
+    plt.close(fig)
     return regret_matrix

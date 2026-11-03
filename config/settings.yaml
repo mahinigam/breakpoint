@@ -2,6 +2,8 @@ project: "Profit-Optimal Credit Decisioning"
 seed: 42
 negative_weight: 20
 train_val_split_ratio: 0.8
+cv_folds: 5
+
 paths:
   raw_train_data: "data/raw/train_data.csv"
   raw_train_labels: "data/raw/train_labels.csv"
@@ -10,3 +12,11 @@ paths:
   parquet_train_labels: "data/parquet/train_labels.parquet"
   parquet_test_sample: "data/parquet/test_sample.parquet"
   processed_features: "data/processed/customer_features.parquet"
+  test_features: "data/processed/test_customer_features.parquet"
+  oof_predictions: "data/processed/oof_predictions.parquet"
+  calibrated_predictions: "data/processed/oof_predictions_calibrated.parquet"
+  artifacts: "artifacts"
+  reports: "reports"
+  figures: "figures"
+  dashboard_data: "dashboards/data"
+  demo: "data/demo"
