@@ -8,6 +8,6 @@ pyarrow==25.0.1
 pytest==9.1.1
 PyYAML==6.0.3
 scikit-learn==1.9.1
-scipy==1.18.1
+scipy==1.17.1
 seaborn==0.13.2
 shap==0.52.0
