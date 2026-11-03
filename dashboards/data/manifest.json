@@ -1,0 +1,222 @@
+{
+  "environment": {
+    "generated_at": "2026-11-03T12:06:19.770608+00:00",
+    "git_commit": "fddb20a",
+    "lightgbm": "4.7.0",
+    "numpy": "2.5.3",
+    "pandas": "3.0.6",
+    "platform": "macOS-27.2-arm64-arm-64bit-Mach-O",
+    "python": "3.14.8",
+    "scikit_learn": "1.9.1"
+  },
+  "files": {
+    "action_mix.csv": {
+      "columns": [
+        "scenario",
+        "scenario_label",
+        "action",
+        "share",
+        "share_pct",
+        "bad_rate",
+        "bad_rate_pct",
+        "margin",
+        "loss",
+        "exposure",
+        "expected_loss_millions",
+        "exposure_total_millions"
+      ],
+      "rows": 12
+    },
+    "bootstrap.csv": {
+      "columns": [
+        "scenario",
+        "scenario_label",
+        "comparison",
+        "observed_difference_millions",
+        "ci_low_millions",
+        "ci_high_millions",
+        "p_value",
+        "probability_positive_pct"
+      ],
+      "rows": 8
+    },
+    "calibration.csv": {
+      "columns": [
+        "bin",
+        "lower",
+        "upper",
+        "count",
+        "weight",
+        "mean_predicted",
+        "observed",
+        "weight_share",
+        "method",
+        "mean_predicted_pct",
+        "observed_pct",
+        "weight_share_pct"
+      ],
+      "rows": 36
+    },
+    "drift.csv": {
+      "columns": [
+        "feature",
+        "family",
+        "psi",
+        "status",
+        "missing_reference",
+        "missing_current",
+        "missing_delta",
+        "reference_non_missing",
+        "current_non_missing",
+        "missing_delta_pct"
+      ],
+      "rows": 50
+    },
+    "kpi.csv": {
+      "columns": [
+        "scenario",
+        "scenario_label",
+        "cost_ratio",
+        "binary_profit_millions",
+        "action_profit_millions",
+        "oracle_profit_millions",
+        "profit_uplift_pct",
+        "binary_regret_vs_oracle_pct",
+        "action_regret_pct",
+        "expected_loss_change_pct",
+        "exposure_change_pct",
+        "grow_share_pct",
+        "hold_share_pct",
+        "restrict_share_pct"
+      ],
+      "rows": 4
+    },
+    "operating_characteristics.csv": {
+      "columns": [
+        "scenario",
+        "cost_ratio",
+        "binary_profit",
+        "action_profit",
+        "action_oracle_profit",
+        "binary_regret_vs_action_oracle",
+        "action_regret",
+        "profit_uplift_vs_binary",
+        "expected_loss_binary",
+        "expected_loss_action",
+        "expected_loss_change",
+        "exposure_binary",
+        "exposure_action",
+        "exposure_change",
+        "binary_bad_rate",
+        "profit_uplift_vs_binary_pct",
+        "binary_regret_vs_action_oracle_pct",
+        "action_regret_pct",
+        "expected_loss_change_pct",
+        "exposure_change_pct",
+        "binary_profit_millions",
+        "action_profit_millions",
+        "action_oracle_profit_millions",
+        "scenario_label"
+      ],
+      "rows": 4
+    },
+    "policy_card.csv": {
+      "columns": [
+        "binary_minimax_cutoff",
+        "grow_cutoff",
+        "hold_upper_cutoff",
+        "action_worst_case_regret_pct",
+        "binary_worst_case_regret_pct",
+        "max_grow_share",
+        "min_hold_share",
+        "max_expected_loss_increase",
+        "grow_margin_multiplier",
+        "grow_exposure_multiplier",
+        "hold_margin_multiplier",
+        "hold_exposure_multiplier"
+      ],
+      "rows": 1
+    },
+    "policy_markers.csv": {
+      "columns": [
+        "scenario",
+        "scenario_label",
+        "cost_ratio",
+        "policy",
+        "probability_cutoff",
+        "nearest_curve_cutoff",
+        "profit_millions",
+        "regret_pct"
+      ],
+      "rows": 24
+    },
+    "power.csv": {
+      "columns": [
+        "alpha",
+        "mean_difference",
+        "n_accounts_per_arm",
+        "n_sims",
+        "power",
+        "std_difference",
+        "power_pct",
+        "required_n_per_arm_80pct"
+      ],
+      "rows": 6
+    },
+    "score_histogram.csv": {
+      "columns": [
+        "bin",
+        "lower",
+        "upper",
+        "midpoint",
+        "count",
+        "weight",
+        "good_weight",
+        "bad_weight",
+        "bad_rate",
+        "action",
+        "share_pct",
+        "bad_rate_pct",
+        "action_label"
+      ],
+      "rows": 57
+    },
+    "sensitivity.csv": {
+      "columns": [
+        "cost_ratio",
+        "optimal_cutoff",
+        "oracle_profit",
+        "f1_captured",
+        "ks_captured",
+        "binary_minimax_captured",
+        "action_policy_captured",
+        "binary_minimax_regret",
+        "action_policy_regret",
+        "f1_captured_pct",
+        "ks_captured_pct",
+        "binary_minimax_captured_pct",
+        "action_policy_captured_pct",
+        "binary_minimax_regret_pct",
+        "action_policy_regret_pct"
+      ],
+      "rows": 50
+    },
+    "threshold_curve.csv": {
+      "columns": [
+        "scenario",
+        "cost_ratio",
+        "probability_cutoff",
+        "profit",
+        "oracle_profit",
+        "regret",
+        "profit_millions",
+        "oracle_profit_millions",
+        "regret_pct",
+        "scenario_label"
+      ],
+      "rows": 2324
+    }
+  },
+  "generated_at": "2026-11-03T12:06:19.066436+00:00",
+  "source": "canonical reports/metrics.json and reports/policy.json"
+}

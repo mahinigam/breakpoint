@@ -1,0 +1,595 @@
+{
+  "action_policy": {
+    "actions": {
+      "grow": {
+        "description": "Increase the line by 50%; margin scales by 10%.",
+        "exposure_multiplier": 1.5,
+        "label": "Grow",
+        "margin_multiplier": 1.1
+      },
+      "hold": {
+        "description": "Keep the current line.",
+        "exposure_multiplier": 1.0,
+        "label": "Hold",
+        "margin_multiplier": 1.0
+      },
+      "restrict": {
+        "description": "Reduce the line to zero (exit).",
+        "exposure_multiplier": 0.0,
+        "label": "Restrict",
+        "margin_multiplier": 0.0
+      }
+    },
+    "constraints": {
+      "max_expected_loss_increase": 0.1,
+      "max_grow_share": 0.6,
+      "min_hold_share": 0.1
+    },
+    "grow_cutoff": 0.0008270590919461555,
+    "restrict_cutoff": 0.040517027094208305,
+    "scenarios": {
+      "aggressive": {
+        "action_oracle_profit": 6774607000.0,
+        "action_outcome": {
+          "action_mix": {
+            "grow": 0.5999850011444213,
+            "hold": 0.3105007305800945,
+            "restrict": 0.08951426827548419
+          },
+          "bad_rate_by_action": {
+            "grow": 0.00021506603827886478,
+            "hold": 0.008976516977386289,
+            "restrict": 0.15923846543747558
+          },
+          "counts": {
+            "bad_grow": 893.0,
+            "bad_hold": 19289.0,
+            "bad_restrict": 98646.0,
+            "good_grow": 4151320.0,
+            "good_hold": 2129540.0,
+            "good_restrict": 520840.0
+          },
+          "expected_loss": 41050819.13076882,
+          "exposure": 41885742500.0,
+          "grow_cutoff": 0.0008270590919461555,
+          "profit": 6654735000.0,
+          "regret": 0.017694310533437587,
+          "restrict_cutoff": 0.040517027094208305
+        },
+        "binary_profit": 6333364000.0,
+        "binary_regret_vs_action_oracle": 0.0651318962118393,
+        "cost_ratio": 2.0,
+        "expected_loss_binary": 49927854.070273176,
+        "expected_loss_change": -0.1777972457420256,
+        "exposure_binary": 32042090000.0,
+        "exposure_change": 0.3072100633884993
+      },
+      "conservative": {
+        "action_oracle_profit": 1258528400.0,
+        "action_outcome": {
+          "action_mix": {
+            "grow": 0.5999850011444213,
+            "hold": 0.3105007305800945,
+            "restrict": 0.08951426827548419
+          },
+          "bad_rate_by_action": {
+            "grow": 0.00021506603827886478,
+            "hold": 0.008976516977386289,
+            "restrict": 0.15923846543747558
+          },
+          "counts": {
+            "bad_grow": 893.0,
+            "bad_hold": 19289.0,
+            "bad_restrict": 98646.0,
+            "good_grow": 4151320.0,
+            "good_hold": 2129540.0,
+            "good_restrict": 520840.0
+          },
+          "expected_loss": 82101638.26153764,
+          "exposure": 41885742500.0,
+          "grow_cutoff": 0.0008270590919461555,
+          "profit": 1256684400.0,
+          "regret": 0.0014652033279503268,
+          "restrict_cutoff": 0.040517027094208305
+        },
+        "binary_profit": 1176608000.0,
+        "binary_regret_vs_action_oracle": 0.06509221404936115,
+        "cost_ratio": 20.0,
+        "expected_loss_binary": 99855708.14054635,
+        "expected_loss_change": -0.1777972457420256,
+        "exposure_binary": 32042090000.0,
+        "exposure_change": 0.3072100633884993
+      },
+      "moderate": {
+        "action_oracle_profit": 3333018500.0,
+        "action_outcome": {
+          "action_mix": {
+            "grow": 0.5999850011444213,
+            "hold": 0.3105007305800945,
+            "restrict": 0.08951426827548419
+          },
+          "bad_rate_by_action": {
+            "grow": 0.00021506603827886478,
+            "hold": 0.008976516977386289,
+            "restrict": 0.15923846543747558
+          },
+          "counts": {
+            "bad_grow": 893.0,
+            "bad_hold": 19289.0,
+            "bad_restrict": 98646.0,
+            "good_grow": 4151320.0,
+            "good_hold": 2129540.0,
+            "good_restrict": 520840.0
+          },
+          "expected_loss": 61576228.69615322,
+          "exposure": 41885742500.0,
+          "grow_cutoff": 0.0008270590919461555,
+          "profit": 3286110500.0,
+          "regret": 0.014073729263728959,
+          "restrict_cutoff": 0.040517027094208305
+        },
+        "binary_profit": 3116646000.0,
+        "binary_regret_vs_action_oracle": 0.0649178814939071,
+        "cost_ratio": 6.0,
+        "expected_loss_binary": 74891781.10540977,
+        "expected_loss_change": -0.17779724574202582,
+        "exposure_binary": 32042090000.0,
+        "exposure_change": 0.3072100633884993
+      },
+      "stress": {
+        "action_oracle_profit": 1175094900.0,
+        "action_outcome": {
+          "action_mix": {
+            "grow": 0.5999850011444213,
+            "hold": 0.3105007305800945,
+            "restrict": 0.08951426827548419
+          },
+          "bad_rate_by_action": {
+            "grow": 0.00021506603827886478,
+            "hold": 0.008976516977386289,
+            "restrict": 0.15923846543747558
+          },
+          "counts": {
+            "bad_grow": 893.0,
+            "bad_hold": 19289.0,
+            "bad_restrict": 98646.0,
+            "good_grow": 4151320.0,
+            "good_hold": 2129540.0,
+            "good_restrict": 520840.0
+          },
+          "expected_loss": 184728686.08845967,
+          "exposure": 83771485000.0,
+          "grow_cutoff": 0.0008270590919461555,
+          "profit": 1153541900.0,
+          "regret": 0.018341497354809385,
+          "restrict_cutoff": 0.040517027094208305
+        },
+        "binary_profit": 1051518000.0,
+        "binary_regret_vs_action_oracle": 0.1051633361697,
+        "cost_ratio": 45.0,
+        "expected_loss_binary": 224675343.31622928,
+        "expected_loss_change": -0.1777972457420257,
+        "exposure_binary": 64084180000.0,
+        "exposure_change": 0.3072100633884993
+      }
+    },
+    "score_semantics": "grow if PD <= grow_cutoff, hold if <= restrict_cutoff, restrict above",
+    "worst_case_regret": 0.018341497354809385
+  },
+  "binary_minimax": {
+    "baseline": {
+      "aggressive": {
+        "action_mix": {
+          "approve": 0.9260013108826378,
+          "decline": 0.07399868911736218
+        },
+        "bad_rate_by_action": {
+          "approve": 0.0039039276152086208
+        },
+        "counts": {
+          "bad": 25018.0,
+          "good": 6383400.0
+        },
+        "expected_loss": 49927854.070273176,
+        "exposure": 32042090000.0,
+        "profit": 6333364000.0,
+        "regret": 0.0,
+        "threshold": 0.0531240049964486
+      },
+      "conservative": {
+        "action_mix": {
+          "approve": 0.9260013108826378,
+          "decline": 0.07399868911736218
+        },
+        "bad_rate_by_action": {
+          "approve": 0.0039039276152086208
+        },
+        "counts": {
+          "bad": 25018.0,
+          "good": 6383400.0
+        },
+        "expected_loss": 99855708.14054635,
+        "exposure": 32042090000.0,
+        "profit": 1176608000.0,
+        "regret": 0.0,
+        "threshold": 0.0531240049964486
+      },
+      "moderate": {
+        "action_mix": {
+          "approve": 0.9260013108826378,
+          "decline": 0.07399868911736218
+        },
+        "bad_rate_by_action": {
+          "approve": 0.0039039276152086208
+        },
+        "counts": {
+          "bad": 25018.0,
+          "good": 6383400.0
+        },
+        "expected_loss": 74891781.10540977,
+        "exposure": 32042090000.0,
+        "profit": 3116646000.0,
+        "regret": 0.0,
+        "threshold": 0.0531240049964486
+      },
+      "stress": {
+        "action_mix": {
+          "approve": 0.9260013108826378,
+          "decline": 0.07399868911736218
+        },
+        "bad_rate_by_action": {
+          "approve": 0.0039039276152086208
+        },
+        "counts": {
+          "bad": 25018.0,
+          "good": 6383400.0
+        },
+        "expected_loss": 224675343.31622928,
+        "exposure": 64084180000.0,
+        "profit": 1051518000.0,
+        "regret": 0.0,
+        "threshold": 0.0531240049964486
+      }
+    },
+    "max_regret": 0.04264945781974245,
+    "profits": {
+      "aggressive": 6333364000.0,
+      "conservative": 1176608000.0,
+      "moderate": 3116646000.0,
+      "stress": 1051518000.0
+    },
+    "regrets": {
+      "aggressive": 0.04264945781974245,
+      "conservative": 0.0005775986844340552,
+      "moderate": 0.019875176345017967,
+      "stress": 0.04066191826013811
+    },
+    "threshold": 0.0531240049964486
+  },
+  "calibrated": true,
+  "calibration_method": "isotonic",
+  "comparison": [
+    {
+      "action_mix": {
+        "grow": 0.5999850011444213,
+        "hold": 0.3105007305800945,
+        "restrict": 0.08951426827548419
+      },
+      "action_oracle_profit": 1258528400.0,
+      "action_profit": 1256684400.0,
+      "action_regret": 0.0014652033279503268,
+      "bad_rate_by_action": {
+        "grow": 0.00021506603827886478,
+        "hold": 0.008976516977386289,
+        "restrict": 0.15923846543747558
+      },
+      "binary_bad_rate": 0.0039039276152086208,
+      "binary_profit": 1176608000.0,
+      "binary_regret_vs_action_oracle": 0.06509221404936115,
+      "cost_ratio": 20.0,
+      "expected_loss_action": 82101638.26153764,
+      "expected_loss_binary": 99855708.14054635,
+      "expected_loss_change": -0.1777972457420256,
+      "exposure_action": 41885742500.0,
+      "exposure_binary": 32042090000.0,
+      "exposure_change": 0.3072100633884993,
+      "profit_uplift_vs_binary": 0.06805699094345785,
+      "scenario": "conservative"
+    },
+    {
+      "action_mix": {
+        "grow": 0.5999850011444213,
+        "hold": 0.3105007305800945,
+        "restrict": 0.08951426827548419
+      },
+      "action_oracle_profit": 3333018500.0,
+      "action_profit": 3286110500.0,
+      "action_regret": 0.014073729263728959,
+      "bad_rate_by_action": {
+        "grow": 0.00021506603827886478,
+        "hold": 0.008976516977386289,
+        "restrict": 0.15923846543747558
+      },
+      "binary_bad_rate": 0.0039039276152086208,
+      "binary_profit": 3116646000.0,
+      "binary_regret_vs_action_oracle": 0.0649178814939071,
+      "cost_ratio": 6.0,
+      "expected_loss_action": 61576228.69615322,
+      "expected_loss_binary": 74891781.10540977,
+      "expected_loss_change": -0.17779724574202582,
+      "exposure_action": 41885742500.0,
+      "exposure_binary": 32042090000.0,
+      "exposure_change": 0.3072100633884993,
+      "profit_uplift_vs_binary": 0.054373996918482215,
+      "scenario": "moderate"
+    },
+    {
+      "action_mix": {
+        "grow": 0.5999850011444213,
+        "hold": 0.3105007305800945,
+        "restrict": 0.08951426827548419
+      },
+      "action_oracle_profit": 6774607000.0,
+      "action_profit": 6654735000.0,
+      "action_regret": 0.017694310533437587,
+      "bad_rate_by_action": {
+        "grow": 0.00021506603827886478,
+        "hold": 0.008976516977386289,
+        "restrict": 0.15923846543747558
+      },
+      "binary_bad_rate": 0.0039039276152086208,
+      "binary_profit": 6333364000.0,
+      "binary_regret_vs_action_oracle": 0.0651318962118393,
+      "cost_ratio": 2.0,
+      "expected_loss_action": 41050819.13076882,
+      "expected_loss_binary": 49927854.070273176,
+      "expected_loss_change": -0.1777972457420256,
+      "exposure_action": 41885742500.0,
+      "exposure_binary": 32042090000.0,
+      "exposure_change": 0.3072100633884993,
+      "profit_uplift_vs_binary": 0.05074254377294585,
+      "scenario": "aggressive"
+    },
+    {
+      "action_mix": {
+        "grow": 0.5999850011444213,
+        "hold": 0.3105007305800945,
+        "restrict": 0.08951426827548419
+      },
+      "action_oracle_profit": 1175094900.0,
+      "action_profit": 1153541900.0,
+      "action_regret": 0.018341497354809385,
+      "bad_rate_by_action": {
+        "grow": 0.00021506603827886478,
+        "hold": 0.008976516977386289,
+        "restrict": 0.15923846543747558
+      },
+      "binary_bad_rate": 0.0039039276152086208,
+      "binary_profit": 1051518000.0,
+      "binary_regret_vs_action_oracle": 0.1051633361697,
+      "cost_ratio": 45.0,
+      "expected_loss_action": 184728686.08845967,
+      "expected_loss_binary": 224675343.31622928,
+      "expected_loss_change": -0.1777972457420257,
+      "exposure_action": 83771485000.0,
+      "exposure_binary": 64084180000.0,
+      "exposure_change": 0.3072100633884993,
+      "profit_uplift_vs_binary": 0.09702534811577168,
+      "scenario": "stress"
+    }
+  ],
+  "environment": {
+    "generated_at": "2026-11-03T11:37:51.507452+00:00",
+    "git_commit": "fddb20a",
+    "lightgbm": "4.7.0",
+    "numpy": "2.5.3",
+    "pandas": "3.0.6",
+    "platform": "macOS-27.2-arm64-arm-64bit-Mach-O",
+    "python": "3.14.8",
+    "scikit_learn": "1.9.1"
+  },
+  "generated_at": "2026-11-03T11:37:51.499115+00:00",
+  "guardrail_sensitivity": [
+    {
+      "grow_cutoff": 0.00041222105997709,
+      "grow_share": 0.49596577024180816,
+      "hold_share": 0.4145199614827077,
+      "max_grow_share": 0.5,
+      "mean_profit": 3054649450.0,
+      "restrict_cutoff": 0.040517027094208305,
+      "restrict_share": 0.08951426827548419,
+      "worst_case_regret": 0.018690493811647082
+    },
+    {
+      "grow_cutoff": 0.0008270590919461555,
+      "grow_share": 0.5999850011444213,
+      "hold_share": 0.3105007305800945,
+      "max_grow_share": 0.6,
+      "mean_profit": 3087767950.0,
+      "restrict_cutoff": 0.040517027094208305,
+      "restrict_share": 0.08951426827548419,
+      "worst_case_regret": 0.018341497354809385
+    },
+    {
+      "grow_cutoff": 0.0024626023589359738,
+      "grow_share": 0.6983621769899637,
+      "hold_share": 0.21053870456127047,
+      "max_grow_share": 0.7,
+      "mean_profit": 3115260250.0,
+      "restrict_cutoff": 0.04035264624631281,
+      "restrict_share": 0.09109911844876575,
+      "worst_case_regret": 0.016988894670346817
+    },
+    {
+      "grow_cutoff": 0.006632277081798084,
+      "grow_share": 0.7873753274316642,
+      "hold_share": 0.12078514818522518,
+      "max_grow_share": 0.8,
+      "mean_profit": 3137133200.0,
+      "restrict_cutoff": 0.03920591835730103,
+      "restrict_share": 0.09183952438311065,
+      "worst_case_regret": 0.016576258199837688
+    }
+  ],
+  "heuristics": {
+    "f1": 0.24286571988797293,
+    "fixed_0_5": 0.5,
+    "ks": 0.017041079931791703,
+    "top_4pct": 0.1030719784737275
+  },
+  "partial_restrict": {
+    "description": "Restrict modelled as a 50% line reduction instead of a full exit",
+    "grow_cutoff": 0.0008270590919461555,
+    "restrict_cutoff": 0.04660944857757969,
+    "scenarios": {
+      "aggressive": {
+        "action_mix": {
+          "grow": 0.5999850011444213,
+          "hold": 0.32116220034078324,
+          "restrict": 0.0788527985147954
+        },
+        "bad_rate_by_action": {
+          "grow": 0.00021506603827886478,
+          "hold": 0.010110626596095044,
+          "restrict": 0.17493581673547698
+        },
+        "counts": {
+          "bad_grow": 893.0,
+          "bad_hold": 22472.0,
+          "bad_restrict": 95463.0,
+          "good_grow": 4151320.0,
+          "good_hold": 2200140.0,
+          "good_restrict": 450240.0
+        },
+        "expected_loss": 143303987.29674947,
+        "exposure": 43618915000.0,
+        "grow_cutoff": 0.0008270590919461555,
+        "profit": 6848626000.0,
+        "regret": 0.022185982701069973,
+        "restrict_cutoff": 0.04660944857757969
+      },
+      "conservative": {
+        "action_mix": {
+          "grow": 0.5999850011444213,
+          "hold": 0.32116220034078324,
+          "restrict": 0.0788527985147954
+        },
+        "bad_rate_by_action": {
+          "grow": 0.00021506603827886478,
+          "hold": 0.010110626596095044,
+          "restrict": 0.17493581673547698
+        },
+        "counts": {
+          "bad_grow": 893.0,
+          "bad_hold": 22472.0,
+          "bad_restrict": 95463.0,
+          "good_grow": 4151320.0,
+          "good_hold": 2200140.0,
+          "good_restrict": 450240.0
+        },
+        "expected_loss": 286607974.59349895,
+        "exposure": 43618915000.0,
+        "grow_cutoff": 0.0008270590919461555,
+        "profit": 1112170400.0,
+        "regret": 0.0002049625386012781,
+        "restrict_cutoff": 0.04660944857757969
+      },
+      "moderate": {
+        "action_mix": {
+          "grow": 0.5999850011444213,
+          "hold": 0.32116220034078324,
+          "restrict": 0.0788527985147954
+        },
+        "bad_rate_by_action": {
+          "grow": 0.00021506603827886478,
+          "hold": 0.010110626596095044,
+          "restrict": 0.17493581673547698
+        },
+        "counts": {
+          "bad_grow": 893.0,
+          "bad_hold": 22472.0,
+          "bad_restrict": 95463.0,
+          "good_grow": 4151320.0,
+          "good_hold": 2200140.0,
+          "good_restrict": 450240.0
+        },
+        "expected_loss": 214955980.9451242,
+        "exposure": 43618915000.0,
+        "grow_cutoff": 0.0008270590919461555,
+        "profit": 3281227000.0,
+        "regret": 0.011181971667998912,
+        "restrict_cutoff": 0.04660944857757969
+      },
+      "stress": {
+        "action_mix": {
+          "grow": 0.5999850011444213,
+          "hold": 0.32116220034078324,
+          "restrict": 0.0788527985147954
+        },
+        "bad_rate_by_action": {
+          "grow": 0.00021506603827886478,
+          "hold": 0.010110626596095044,
+          "restrict": 0.17493581673547698
+        },
+        "counts": {
+          "bad_grow": 893.0,
+          "bad_hold": 22472.0,
+          "bad_restrict": 95463.0,
+          "good_grow": 4151320.0,
+          "good_hold": 2200140.0,
+          "good_restrict": 450240.0
+        },
+        "expected_loss": 644867942.8353727,
+        "exposure": 87237830000.0,
+        "grow_cutoff": 0.0008270590919461555,
+        "profit": 754455400.0,
+        "regret": 0.023352889868340963,
+        "restrict_cutoff": 0.04660944857757969
+      }
+    },
+    "worst_case_regret": 0.023352889868340963
+  },
+  "sample_rows": 458913,
+  "scenarios": {
+    "aggressive": {
+      "cost_ratio": 2.0,
+      "description": "Premium, high-margin product",
+      "exposure": 5000,
+      "lgd": 0.4,
+      "loss": 2000.0,
+      "margin": 1000
+    },
+    "conservative": {
+      "cost_ratio": 20.0,
+      "description": "High-loss, low-margin product",
+      "exposure": 5000,
+      "lgd": 0.8,
+      "loss": 4000.0,
+      "margin": 200
+    },
+    "moderate": {
+      "cost_ratio": 6.0,
+      "description": "Typical revolving credit",
+      "exposure": 5000,
+      "lgd": 0.6,
+      "loss": 3000.0,
+      "margin": 500
+    },
+    "stress": {
+      "cost_ratio": 45.0,
+      "description": "Recession scenario",
+      "exposure": 10000,
+      "lgd": 0.9,
+      "loss": 9000.0,
+      "margin": 200
+    }
+  },
+  "score_semantics": "lower PD is safer; approve/grow when PD <= cutoff",
+  "sensitivity": {
+    "action_sweep_worst_case_cost_ratio": 1.0,
+    "action_sweep_worst_case_regret": 0.0038030266919987874,
+    "binary_minimax_worst_case_cost_ratio": 50.0,
+    "binary_sweep_minimax_cutoff": 0.05082005512895295,
+    "binary_sweep_worst_case_regret": 0.052886299299178145
+  }
+}

@@ -1,6 +1,6 @@
 \begin{itemize}
-    \item \textbf{Profit-Optimal Credit Decisioning:} Architected an out-of-core DuckDB pipeline to process 47GB of Amex default data, engineering point-in-time safe rolling features without triggering OOM errors.
-    \item \textbf{Statistical vs. Economic Optimization:} Trained a LightGBM model (AUC 0.958) and proved that optimizing thresholds via F1 or KS statistics leads to severe profit losses (up to 31.8\% under stress scenarios).
-    \item \textbf{Statistical Rigor \& Calibration:} Applied Isotonic Regression to achieve near-perfect Expected Calibration Error (0.0001) and designed an offline simulation-based Champion-Challenger test demonstrating 99.8\% power with 10k accounts per arm.
-    \item \textbf{Explainability \& Monitoring:} Extracted grouped SHAP values to generate plain-English reason codes for rejected applicants and built a robust Population Stability Index (PSI) drift monitoring pipeline with automated retrain flags.
+    \item \textbf{Profit-Optimal Credit Decisioning:} Built an out-of-core DuckDB pipeline over 458,913 Amex customers and 13 monthly statements, producing a point-in-time-safe, one-row-per-customer feature table with 200 features.
+    \item \textbf{Statistical vs. Economic Optimization:} Trained a calibrated LightGBM model (AUC 0.9584) and replaced F1/KS heuristics with a constrained three-action Grow/Hold/Restrict policy; worst-case regret fell from 4.26\% (binary minimax) to 1.83\%.
+    \item \textbf{Calibration \& Uncertainty:} Cross-fitted isotonic regression cut Brier from 0.012211 to 0.012055 and quantile ECE from 0.2399\% to 0.0075\%; a 1,000-replicate paired bootstrap showed a +\$102.0M stress-scenario advantage [$100.6M, $103.5M] over binary minimax.
+    \item \textbf{Explainability \& Monitoring:} Generated SHAP reason codes from the saved champion model and built a customer-level PSI pipeline with population-weighted score/action drift; the temporal holdout showed score PSI 0.0003 and no retrain trigger.
 \end{itemize}

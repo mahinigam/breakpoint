@@ -1,3 +1,5 @@
+# Economic scenarios are explicit, labeled assumptions.
+# r = expected loss / margin = (lgd * exposure) / margin.
 scenarios:
   conservative:
     margin: 200
@@ -19,3 +21,49 @@ scenarios:
     lgd: 0.9
     exposure: 10000
     description: "Recession scenario"
+
+# Action economics for existing customers.
+#
+# Each action scales the base scenario's margin and loss exposure:
+#   margin_a = margin_multiplier * margin
+#   loss_a   = exposure_multiplier * lgd * exposure
+#
+# "restrict" is a full line reduction / exit (zero margin, zero loss
+# exposure). A partial reduction can be modeled by changing the
+# multipliers, e.g. 0.5 / 0.5 for a 50% line cut.
+actions:
+  grow:
+    label: "Grow"
+    margin_multiplier: 1.10
+    exposure_multiplier: 1.50
+    description: "Increase the line by 50%; margin scales by 10%."
+  hold:
+    label: "Hold"
+    margin_multiplier: 1.00
+    exposure_multiplier: 1.00
+    description: "Keep the current line."
+  restrict:
+    label: "Restrict"
+    margin_multiplier: 0.00
+    exposure_multiplier: 0.00
+    description: "Reduce the line to zero (exit)."
+
+# Portfolio guardrails applied when optimizing the action policy.
+constraints:
+  max_grow_share: 0.60
+  min_hold_share: 0.10
+  max_expected_loss_increase: 0.10
+
+# Grid used for threshold search. Log-spaced plus score quantiles so the
+# very low-PD region (where the grow cutoff lives) is represented.
+threshold_grid:
+  log_min: 0.00001
+  log_max: 0.99
+  log_points: 400
+  quantile_points: 200
+  include: [0.001, 0.002, 0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5]
+
+cost_ratio_sweep:
+  min: 1.0
+  max: 50.0
+  points: 50

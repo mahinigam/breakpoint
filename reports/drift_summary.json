@@ -1,0 +1,133 @@
+{
+  "action_mix_current": {
+    "grow": 0.5972742797172623,
+    "hold": 0.31191177062116726,
+    "restrict": 0.09081394966157041
+  },
+  "action_mix_delta": {
+    "grow": -0.00337817492001502,
+    "hold": 0.0017584765554035098,
+    "restrict": 0.0016196983646115382
+  },
+  "action_mix_reference": {
+    "grow": 0.6006524546372773,
+    "hold": 0.31015329406576375,
+    "restrict": 0.08919425129695888
+  },
+  "caveat": "This is a monitoring exercise on observed data, not a labelled out-of-time validation set. The test labels are unavailable; the current window is a temporal or random holdout from the training population. Score drift uses out-of-fold calibrated scores.",
+  "current_default_rate": 0.016809949208136936,
+  "current_default_rate_unweighted": 0.2548141414365376,
+  "current_rows": 90203,
+  "default_rate_delta": -0.00044916146766827217,
+  "environment": {
+    "generated_at": "2026-11-03T11:43:32.522754+00:00",
+    "git_commit": "fddb20a",
+    "lightgbm": "4.7.0",
+    "numpy": "2.5.3",
+    "pandas": "3.0.6",
+    "platform": "macOS-27.2-arm64-arm-64bit-Mach-O",
+    "python": "3.14.8",
+    "scikit_learn": "1.9.1"
+  },
+  "feature_psi_weighting": "unweighted (observed account-level feature distributions); score PSI and action mix are population-weighted with the 20x negative-class design weight",
+  "generated_at": "2026-11-03T11:43:32.511196+00:00",
+  "n_features": 200,
+  "reference_default_rate": 0.017259110675805208,
+  "reference_default_rate_unweighted": 0.25994141737408805,
+  "reference_rows": 368710,
+  "retrain_trigger": {
+    "delinquency_balance_above_threshold": 0,
+    "features_above_threshold": 0,
+    "max_action_share_delta": 0.00337817492001502,
+    "pct_features_above_threshold": 0.0,
+    "reasons": [],
+    "retrain_review": false,
+    "score_psi": 0.0002974397084169932,
+    "thresholds": {
+      "action_share_tolerance": 0.05,
+      "critical_family_count": 3,
+      "feature_psi_red": 0.25,
+      "global_pct_features": 10.0
+    }
+  },
+  "score_psi": 0.0002974397084169932,
+  "score_status": "green",
+  "split": "temporal",
+  "split_description": "Earliest 80% of accounts by statement date vs latest 20% (cutoff 2018-03-25)",
+  "status_counts": {
+    "green": 199,
+    "yellow": 1
+  },
+  "top_features": [
+    {
+      "family": "Balance",
+      "feature": "B_17",
+      "missing_delta": 0.0022667873037589548,
+      "psi": 0.140086428834528,
+      "status": "yellow"
+    },
+    {
+      "family": "Spend",
+      "feature": "S_11",
+      "missing_delta": 0.0,
+      "psi": 0.09060778846539073,
+      "status": "green"
+    },
+    {
+      "family": "Payment",
+      "feature": "P_2_lag1_diff",
+      "missing_delta": 0.0006850533853812873,
+      "psi": 0.07619467163815091,
+      "status": "green"
+    },
+    {
+      "family": "Delinquency",
+      "feature": "D_88",
+      "missing_delta": 7.662765868510224e-05,
+      "psi": 0.05365318978206144,
+      "status": "green"
+    },
+    {
+      "family": "Delinquency",
+      "feature": "D_39",
+      "missing_delta": 0.0,
+      "psi": 0.03042138045807084,
+      "status": "green"
+    },
+    {
+      "family": "Delinquency",
+      "feature": "D_108",
+      "missing_delta": -0.0015956624342131631,
+      "psi": 0.02607910430851636,
+      "status": "green"
+    },
+    {
+      "family": "Balance",
+      "feature": "B_39",
+      "missing_delta": 0.00012239609813602392,
+      "psi": 0.020022825134515906,
+      "status": "green"
+    },
+    {
+      "family": "Delinquency",
+      "feature": "D_110",
+      "missing_delta": -2.842232655009269e-05,
+      "psi": 0.018754695758483115,
+      "status": "green"
+    },
+    {
+      "family": "Delinquency",
+      "feature": "D_73",
+      "missing_delta": 0.0002374565924468941,
+      "psi": 0.012738146646859294,
+      "status": "green"
+    },
+    {
+      "family": "Balance",
+      "feature": "B_42",
+      "missing_delta": -0.0005069627375658969,
+      "psi": 0.012213049699596659,
+      "status": "green"
+    }
+  ]
+}

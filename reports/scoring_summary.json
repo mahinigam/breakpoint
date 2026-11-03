@@ -1,0 +1,30 @@
+{
+  "action_counts": {
+    "Grow": 292,
+    "Hold": 167,
+    "Restrict": 41
+  },
+  "action_shares": {
+    "Grow": 0.584,
+    "Hold": 0.334,
+    "Restrict": 0.082
+  },
+  "environment": {
+    "generated_at": "2026-11-03T12:06:29.204456+00:00",
+    "git_commit": "fddb20a",
+    "lightgbm": "4.7.0",
+    "numpy": "2.5.3",
+    "pandas": "3.0.6",
+    "platform": "macOS-27.2-arm64-arm-64bit-Mach-O",
+    "python": "3.14.8",
+    "scikit_learn": "1.9.1"
+  },
+  "explained_rows": 20,
+  "grow_cutoff": 0.0008270590919461555,
+  "input": "data/demo/scoring_input.csv",
+  "mean_probability_of_default": 0.0128578781,
+  "n_rows": 500,
+  "output": "reports/scored_demo.csv",
+  "restrict_cutoff": 0.040517027094208305,
+  "scenario": "moderate"
+}
