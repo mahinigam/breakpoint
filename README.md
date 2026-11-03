@@ -6,7 +6,6 @@ Most credit-risk projects stop at AUC. Breakpoint asks the next question: *given
 
 The project trains a 200-feature LightGBM model on 458,913 American Express customers, calibrates the out-of-fold probabilities, and optimizes a three-action policy under explicit portfolio guardrails. It is not an approve/decline exercise. The policy grows the safest accounts, holds the middle, and exits the riskiest — and beats a binary minimax threshold in every economic scenario tested.
 
-[![CI](https://github.com/mahinigam/breakpoint/actions/workflows/ci.yml/badge.svg)](https://github.com/mahinigam/breakpoint/actions/workflows/ci.yml)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Tableau](https://img.shields.io/badge/Tableau-ready%20aggregates-E97627.svg)](dashboards/data/)
