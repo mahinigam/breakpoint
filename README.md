@@ -8,9 +8,12 @@ The project trains a 200-feature LightGBM model on 458,913 American Express cust
 
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Tableau](https://img.shields.io/badge/Tableau-ready%20aggregates-E97627.svg)](dashboards/data/)
+[![Tableau](https://img.shields.io/badge/Tableau-packaged%20workbook-E97627.svg)](dashboards/breakpoint_policy.twbx)
+[![Live demo](https://img.shields.io/badge/live%20demo-mahinigam.github.io-2F6B4F.svg)](https://mahinigam.github.io/breakpoint/)
 
-**Reviewer paths:** [static demo](docs/index.html) · [results](docs/RESULTS.md) · [model card](docs/MODEL_CARD.md) · [decision memo](docs/DECISION_MEMO.md) · [Tableau guide](docs/TABLEAU_DASHBOARD_GUIDE.md) · [interview defense](docs/INTERVIEW_DEFENSE.md)
+**Live reviewer demo:** [https://mahinigam.github.io/breakpoint/](https://mahinigam.github.io/breakpoint/)
+
+**Reviewer paths:** [live demo](https://mahinigam.github.io/breakpoint/) · [Tableau workbook](dashboards/breakpoint_policy.twbx) · [results](docs/RESULTS.md) · [model card](docs/MODEL_CARD.md) · [decision memo](docs/DECISION_MEMO.md) · [Tableau guide](docs/TABLEAU_DASHBOARD_GUIDE.md) · [interview defense](docs/INTERVIEW_DEFENSE.md)
 
 ---
 
@@ -104,11 +107,11 @@ breakpoint/
 │   └── demo/                      # static reviewer page generator
 ├── artifacts/                     # committed model + calibrator + contract
 ├── reports/                       # committed metrics, policy, figures, CSVs
-├── dashboards/data/               # 12 Tableau-ready aggregate CSVs + manifest
+├── dashboards/                    # 12 aggregate CSVs + packaged Tableau workbook
 ├── figures/                       # generated plots
 ├── docs/                          # results, model card, memo, guides, static demo
-├── tests/                         # 48 tests: economics, calibration, drift, scoring, contracts
-├── scripts/                       # docs render/verify
+├── tests/                         # 52 tests: economics, calibration, drift, scoring, contracts
+├── scripts/                       # docs render/verify + Tableau workbook builder
 ├── Makefile
 └── .github/workflows/ci.yml
 ```
@@ -133,7 +136,7 @@ cd breakpoint
 make setup
 make score-demo      # score 500 real-schema accounts with the committed model
 make demo            # rebuild docs/index.html from committed reports
-make test            # 48 tests
+make test            # 52 tests
 make verify-docs     # fail if docs drift from reports/metrics.json or policy.json
 ```
 
@@ -152,7 +155,8 @@ Place the Amex CSV files in `data/raw/`, then:
 
 ```bash
 make pipeline        # data → features → train → calibrate → policy → uncertainty → monitoring → SHAP → Tableau → demo
-make tableau         # refresh the 12 aggregate CSVs in dashboards/data/
+make tableau         # refresh the 12 aggregate CSVs and rebuild the Tableau package
+make tableau-workbook # rebuild only dashboards/breakpoint_policy.twb[x]
 make verify          # tests + docs check + demo rebuild
 ```
 
@@ -192,7 +196,9 @@ SHAP is computed with `TreeExplainer` on the **saved** LightGBM model, not a pro
 
 `dashboards/data/` contains 12 aggregate CSVs generated from the canonical reports: threshold curves, policy markers, action mix, operating characteristics, score histogram, calibration, sensitivity, drift, KPIs, policy card, bootstrap, and power. `dashboards/data/manifest.json` records every file's row count and columns.
 
-The build guide is [`docs/TABLEAU_DASHBOARD_GUIDE.md`](docs/TABLEAU_DASHBOARD_GUIDE.md). It covers the joins, calculated fields, dashboard layout, and publishing steps. **Publishing to Tableau Public requires your Tableau account**; the repository prepares the data and workbook recipe, but does not claim a published URL.
+The repository also ships the actual Tableau deliverable: [`dashboards/breakpoint_policy.twbx`](dashboards/breakpoint_policy.twbx) is a packaged workbook with five sheets — **Profit uplift**, **Action mix**, **Threshold curve**, **Power**, and **Calibration** — plus the **Breakpoint — Policy Brief** dashboard. The unzipped source is [`dashboards/breakpoint_policy.twb`](dashboards/breakpoint_policy.twb). Both are generated deterministically from the aggregate CSVs by `scripts/build_tableau_workbook.py`; CI rebuilds them and fails on drift.
+
+The build and publishing guide is [`docs/TABLEAU_DASHBOARD_GUIDE.md`](docs/TABLEAU_DASHBOARD_GUIDE.md). **Publishing to Tableau Public still requires your signed-in Tableau account.** The workbook is publish-ready; the repository does not claim a Tableau Public URL, and the live static demo above is the no-account fallback.
 
 ## Limitations
 
@@ -210,7 +216,7 @@ The build guide is [`docs/TABLEAU_DASHBOARD_GUIDE.md`](docs/TABLEAU_DASHBOARD_GU
 | [`docs/RESULTS.md`](docs/RESULTS.md) | Every metric, table, and caveat, generated from `reports/metrics.json` and `reports/policy.json` |
 | [`docs/MODEL_CARD.md`](docs/MODEL_CARD.md) | Intended use, training data, metrics, fairness, limitations |
 | [`docs/DECISION_MEMO.md`](docs/DECISION_MEMO.md) | One-page recommendation for a risk committee |
-| [`docs/TABLEAU_DASHBOARD_GUIDE.md`](docs/TABLEAU_DASHBOARD_GUIDE.md) | Build and publish the Tableau dashboard |
+| [`docs/TABLEAU_DASHBOARD_GUIDE.md`](docs/TABLEAU_DASHBOARD_GUIDE.md) | Inspect, rebuild, and publish the Tableau workbook |
 | [`docs/INTERVIEW_DEFENSE.md`](docs/INTERVIEW_DEFENSE.md) | Technical defense of each design choice |
 | [`docs/index.html`](docs/index.html) | Static reviewer demo, no JavaScript or external fonts |
 

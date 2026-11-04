@@ -662,8 +662,8 @@ make verify</code></pre>
     </div>
     <div class="stack">
       <h3>Read the detail</h3>
-      <p class="note"><a href="{REPO_URL}/blob/main/README.md">README</a> · <a href="{REPO_URL}/blob/main/docs/MODEL_CARD.md">Model card</a> · <a href="{REPO_URL}/blob/main/docs/DECISION_MEMO.md">Decision memo</a> · <a href="{REPO_URL}/blob/main/docs/TABLEAU_DASHBOARD_GUIDE.md">Tableau guide</a></p>
-      <p class="note"><a href="{REPO_URL}/tree/main/dashboards/data">Tableau CSVs</a> · <a href="{REPO_URL}/blob/main/docs/INTERVIEW_DEFENSE.md">Interview defense</a></p>
+      <p class="note"><a href="{REPO_URL}/blob/main/README.md">README</a> · <a href="{REPO_URL}/blob/main/docs/MODEL_CARD.md">Model card</a> · <a href="{REPO_URL}/blob/main/docs/DECISION_MEMO.md">Decision memo</a> · <a href="{REPO_URL}/blob/main/dashboards/breakpoint_policy.twbx">Tableau workbook</a></p>
+      <p class="note"><a href="{REPO_URL}/tree/main/dashboards/data">Tableau CSVs</a> · <a href="{REPO_URL}/blob/main/docs/TABLEAU_DASHBOARD_GUIDE.md">Tableau guide</a> · <a href="{REPO_URL}/blob/main/docs/INTERVIEW_DEFENSE.md">Interview defense</a></p>
     </div>
   </div>
   <div class="stack" style="margin-top: var(--space-l);">
@@ -674,7 +674,7 @@ make verify</code></pre>
 </main>
 
 <footer class="wrap">
-  <p>Data: Amex / Kaggle credit default prediction. The test labels are unavailable; all performance numbers are out-of-fold on the labelled training population. The Tableau workbook is prepared as aggregate CSVs and a build guide; publishing to Tableau Public requires your Tableau account.</p>
+  <p>Data: Amex / Kaggle credit default prediction. The test labels are unavailable; all performance numbers are out-of-fold on the labelled training population. The Tableau deliverable is a packaged, aggregate-only workbook; publishing to Tableau Public requires a signed-in Tableau account.</p>
   <p>Built from <code>reports/metrics.json</code> and <code>reports/policy.json</code>. No number on this page is hand-entered.</p>
 </footer>
 </body>

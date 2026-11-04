@@ -52,6 +52,9 @@ jobs:
       - name: Rebuild static demo
         run: python -m src.demo.build_site
 
+      - name: Rebuild Tableau workbook
+        run: python scripts/build_tableau_workbook.py
+
       - name: Check generated files are committed
         run: |
-          git diff --exit-code -- README.md docs/index.html docs/RESULTS.md docs/MODEL_CARD.md docs/DECISION_MEMO.md docs/assets
+          git diff --exit-code -- README.md docs/index.html docs/RESULTS.md docs/MODEL_CARD.md docs/DECISION_MEMO.md docs/assets dashboards/breakpoint_policy.twb dashboards/breakpoint_policy.twbx

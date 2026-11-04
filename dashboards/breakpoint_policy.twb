@@ -1,0 +1,610 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<workbook original-version='18.1' source-build='2026.2.0 (20262.26.0410.0924)' source-platform='mac' version='18.1' xmlns:user='http://www.tableausoftware.com/xml/user'>
+  <preferences />
+  <datasources>
+    <datasource caption='KPI — scenario economics' inline='true' name='federated.kpi' version='18.1'>
+      <connection class='federated'>
+        <named-connections>
+          <named-connection caption='KPI — scenario economics' name='textscan.kpi'>
+            <connection class='textscan' directory='data' filename='kpi.csv' workgroup-auth-mode='as-is' />
+          </named-connection>
+        </named-connections>
+        <relation connection='textscan.kpi' name='kpi.csv' table='[kpi#csv]' type='table'>
+          <columns character-set='UTF-8' header='yes' locale='en_US' separator=','>
+            <column datatype='string' name='scenario_label' ordinal='0' />
+            <column datatype='real' name='profit_uplift_pct' ordinal='1' />
+          </columns>
+        </relation>
+      </connection>
+      <column datatype='string' name='[scenario_label]' role='dimension' type='nominal' />
+      <column datatype='real' name='[profit_uplift_pct]' role='measure' type='quantitative' />
+    </datasource>
+    <datasource caption='Action mix' inline='true' name='federated.action_mix' version='18.1'>
+      <connection class='federated'>
+        <named-connections>
+          <named-connection caption='Action mix' name='textscan.action_mix'>
+            <connection class='textscan' directory='data' filename='action_mix.csv' workgroup-auth-mode='as-is' />
+          </named-connection>
+        </named-connections>
+        <relation connection='textscan.action_mix' name='action_mix.csv' table='[action_mix#csv]' type='table'>
+          <columns character-set='UTF-8' header='yes' locale='en_US' separator=','>
+            <column datatype='string' name='scenario_label' ordinal='0' />
+            <column datatype='string' name='action' ordinal='1' />
+            <column datatype='real' name='share_pct' ordinal='2' />
+          </columns>
+        </relation>
+      </connection>
+      <column datatype='string' name='[scenario_label]' role='dimension' type='nominal' />
+      <column datatype='string' name='[action]' role='dimension' type='nominal' />
+      <column datatype='real' name='[share_pct]' role='measure' type='quantitative' />
+    </datasource>
+    <datasource caption='Threshold curve' inline='true' name='federated.threshold' version='18.1'>
+      <connection class='federated'>
+        <named-connections>
+          <named-connection caption='Threshold curve' name='textscan.threshold'>
+            <connection class='textscan' directory='data' filename='threshold_curve.csv' workgroup-auth-mode='as-is' />
+          </named-connection>
+        </named-connections>
+        <relation connection='textscan.threshold' name='threshold_curve.csv' table='[threshold_curve#csv]' type='table'>
+          <columns character-set='UTF-8' header='yes' locale='en_US' separator=','>
+            <column datatype='string' name='scenario_label' ordinal='0' />
+            <column datatype='real' name='probability_cutoff' ordinal='1' />
+            <column datatype='real' name='profit_millions' ordinal='2' />
+          </columns>
+        </relation>
+      </connection>
+      <column datatype='string' name='[scenario_label]' role='dimension' type='nominal' />
+      <column datatype='real' name='[probability_cutoff]' role='dimension' type='quantitative' />
+      <column datatype='real' name='[profit_millions]' role='measure' type='quantitative' />
+    </datasource>
+    <datasource caption='Champion / challenger power' inline='true' name='federated.power' version='18.1'>
+      <connection class='federated'>
+        <named-connections>
+          <named-connection caption='Champion / challenger power' name='textscan.power'>
+            <connection class='textscan' directory='data' filename='power.csv' workgroup-auth-mode='as-is' />
+          </named-connection>
+        </named-connections>
+        <relation connection='textscan.power' name='power.csv' table='[power#csv]' type='table'>
+          <columns character-set='UTF-8' header='yes' locale='en_US' separator=','>
+            <column datatype='integer' name='n_accounts_per_arm' ordinal='0' />
+            <column datatype='real' name='power_pct' ordinal='1' />
+          </columns>
+        </relation>
+      </connection>
+      <column datatype='integer' name='[n_accounts_per_arm]' role='dimension' type='quantitative' />
+      <column datatype='real' name='[power_pct]' role='measure' type='quantitative' />
+    </datasource>
+    <datasource caption='Calibration' inline='true' name='federated.calibration' version='18.1'>
+      <connection class='federated'>
+        <named-connections>
+          <named-connection caption='Calibration' name='textscan.calibration'>
+            <connection class='textscan' directory='data' filename='calibration.csv' workgroup-auth-mode='as-is' />
+          </named-connection>
+        </named-connections>
+        <relation connection='textscan.calibration' name='calibration.csv' table='[calibration#csv]' type='table'>
+          <columns character-set='UTF-8' header='yes' locale='en_US' separator=','>
+            <column datatype='string' name='method' ordinal='0' />
+            <column datatype='real' name='mean_predicted_pct' ordinal='1' />
+            <column datatype='real' name='observed_pct' ordinal='2' />
+          </columns>
+        </relation>
+      </connection>
+      <column datatype='string' name='[method]' role='dimension' type='nominal' />
+      <column datatype='real' name='[mean_predicted_pct]' role='measure' type='quantitative' />
+      <column datatype='real' name='[observed_pct]' role='measure' type='quantitative' />
+    </datasource>
+  </datasources>
+  <worksheets>
+    <worksheet name='Profit uplift'>
+      <layout-options>
+        <title>
+          <formatted-text>
+            <run bold='true' fontcolor='#222222' fontname='Tableau Medium' fontsize='12'>Profit uplift vs binary minimax</run>
+          </formatted-text>
+        </title>
+      </layout-options>
+      <table>
+        <view>
+          <datasources>
+            <datasource caption='KPI — scenario economics' name='federated.kpi' />
+          </datasources>
+          <datasource-dependencies datasource='federated.kpi'>
+      <column datatype='string' name='[scenario_label]' role='dimension' type='nominal' />
+      <column datatype='real' name='[profit_uplift_pct]' role='measure' type='quantitative' />
+            <column-instance column='[scenario_label]' derivation='None' name='[none:scenario_label:nk]' pivot='key' type='nominal' />
+            <column-instance column='[profit_uplift_pct]' derivation='Sum' name='[sum:profit_uplift_pct:qk]' pivot='key' type='quantitative' />
+          </datasource-dependencies>
+          <aggregation value='true' />
+        </view>
+        <style>
+          <style-rule element='gridline'>
+            <format attr='stroke-size' scope='rows' value='0' />
+            <format attr='stroke-size' scope='cols' value='0' />
+          </style-rule>
+          <style-rule element='table-div'>
+            <format attr='stroke-size' scope='rows' value='0' />
+            <format attr='line-visibility' scope='rows' value='off' />
+            <format attr='stroke-size' scope='cols' value='0' />
+            <format attr='line-visibility' scope='cols' value='off' />
+          </style-rule>
+          <style-rule element='mark'>
+            <format attr='mark-labels-show' value='true' />
+            <format attr='mark-labels-cull' value='true' />
+          </style-rule>
+          <style-rule element='worksheet'>
+            <format attr='display-field-labels' scope='cols' value='false' />
+            <format attr='display-field-labels' scope='rows' value='false' />
+            <format attr='font-family' value='Tableau Book' />
+            <format attr='color' value='#222222' />
+          </style-rule>
+        </style>
+        <panes>
+          <pane selection-relaxation-option='selection-relaxation-allow'>
+            <view>
+              <breakdown value='auto' />
+            </view>
+            <mark class='Bar' />
+            <encodings>
+              <text column='[federated.kpi].[sum:profit_uplift_pct:qk]' />
+            </encodings>
+          </pane>
+        </panes>
+        <rows>[federated.kpi].[none:scenario_label:nk]</rows>
+        <cols>[federated.kpi].[sum:profit_uplift_pct:qk]</cols>
+      </table>
+    </worksheet>
+    <worksheet name='Action mix'>
+      <layout-options>
+        <title>
+          <formatted-text>
+            <run bold='true' fontcolor='#222222' fontname='Tableau Medium' fontsize='12'>Grow / Hold / Restrict mix</run>
+          </formatted-text>
+        </title>
+      </layout-options>
+      <table>
+        <view>
+          <datasources>
+            <datasource caption='Action mix' name='federated.action_mix' />
+          </datasources>
+          <datasource-dependencies datasource='federated.action_mix'>
+      <column datatype='string' name='[scenario_label]' role='dimension' type='nominal' />
+      <column datatype='string' name='[action]' role='dimension' type='nominal' />
+      <column datatype='real' name='[share_pct]' role='measure' type='quantitative' />
+            <column-instance column='[scenario_label]' derivation='None' name='[none:scenario_label:nk]' pivot='key' type='nominal' />
+            <column-instance column='[action]' derivation='None' name='[none:action:nk]' pivot='key' type='nominal' />
+            <column-instance column='[share_pct]' derivation='Sum' name='[sum:share_pct:qk]' pivot='key' type='quantitative' />
+          </datasource-dependencies>
+          <aggregation value='true' />
+        </view>
+        <style>
+          <style-rule element='gridline'>
+            <format attr='stroke-size' scope='rows' value='0' />
+            <format attr='stroke-size' scope='cols' value='0' />
+          </style-rule>
+          <style-rule element='table-div'>
+            <format attr='stroke-size' scope='rows' value='0' />
+            <format attr='line-visibility' scope='rows' value='off' />
+            <format attr='stroke-size' scope='cols' value='0' />
+            <format attr='line-visibility' scope='cols' value='off' />
+          </style-rule>
+          <style-rule element='mark'>
+            <format attr='mark-labels-show' value='true' />
+            <format attr='mark-labels-cull' value='true' />
+          </style-rule>
+          <style-rule element='worksheet'>
+            <format attr='display-field-labels' scope='cols' value='false' />
+            <format attr='display-field-labels' scope='rows' value='false' />
+            <format attr='font-family' value='Tableau Book' />
+            <format attr='color' value='#222222' />
+          </style-rule>
+        </style>
+        <panes>
+          <pane selection-relaxation-option='selection-relaxation-allow'>
+            <view>
+              <breakdown value='auto' />
+            </view>
+            <mark class='Bar' />
+            <encodings>
+              <color column='[federated.action_mix].[none:action:nk]' />
+            </encodings>
+          </pane>
+        </panes>
+        <rows>[federated.action_mix].[none:scenario_label:nk]</rows>
+        <cols>[federated.action_mix].[sum:share_pct:qk]</cols>
+      </table>
+    </worksheet>
+    <worksheet name='Threshold curve'>
+      <layout-options>
+        <title>
+          <formatted-text>
+            <run bold='true' fontcolor='#222222' fontname='Tableau Medium' fontsize='12'>Profit by cutoff (cutoff ≤ 25%)</run>
+          </formatted-text>
+        </title>
+      </layout-options>
+      <table>
+        <view>
+          <datasources>
+            <datasource caption='Threshold curve' name='federated.threshold' />
+          </datasources>
+          <datasource-dependencies datasource='federated.threshold'>
+      <column datatype='string' name='[scenario_label]' role='dimension' type='nominal' />
+      <column datatype='real' name='[probability_cutoff]' role='dimension' type='quantitative' />
+      <column datatype='real' name='[profit_millions]' role='measure' type='quantitative' />
+            <column-instance column='[scenario_label]' derivation='None' name='[none:scenario_label:nk]' pivot='key' type='nominal' />
+            <column-instance column='[probability_cutoff]' derivation='None' name='[none:probability_cutoff:qk]' pivot='key' type='quantitative' />
+            <column-instance column='[profit_millions]' derivation='Sum' name='[sum:profit_millions:qk]' pivot='key' type='quantitative' />
+          </datasource-dependencies>
+          <filter class='quantitative' column='[federated.threshold].[none:probability_cutoff:qk]' included-values='in-range'><min>0.0</min><max>0.25</max></filter>
+          <slices><column>[federated.threshold].[none:probability_cutoff:qk]</column></slices>
+          <aggregation value='true' />
+        </view>
+        <style>
+          <style-rule element='gridline'>
+            <format attr='stroke-size' scope='rows' value='0' />
+            <format attr='stroke-size' scope='cols' value='0' />
+          </style-rule>
+          <style-rule element='table-div'>
+            <format attr='stroke-size' scope='rows' value='0' />
+            <format attr='line-visibility' scope='rows' value='off' />
+            <format attr='stroke-size' scope='cols' value='0' />
+            <format attr='line-visibility' scope='cols' value='off' />
+          </style-rule>
+          <style-rule element='mark'>
+            <format attr='mark-labels-show' value='true' />
+            <format attr='mark-labels-cull' value='true' />
+          </style-rule>
+          <style-rule element='worksheet'>
+            <format attr='display-field-labels' scope='cols' value='false' />
+            <format attr='display-field-labels' scope='rows' value='false' />
+            <format attr='font-family' value='Tableau Book' />
+            <format attr='color' value='#222222' />
+          </style-rule>
+        </style>
+        <panes>
+          <pane selection-relaxation-option='selection-relaxation-allow'>
+            <view>
+              <breakdown value='auto' />
+            </view>
+            <mark class='Line' />
+            <encodings>
+              <color column='[federated.threshold].[none:scenario_label:nk]' />
+            </encodings>
+          </pane>
+        </panes>
+        <rows>[federated.threshold].[sum:profit_millions:qk]</rows>
+        <cols>[federated.threshold].[none:probability_cutoff:qk]</cols>
+      </table>
+    </worksheet>
+    <worksheet name='Power'>
+      <layout-options>
+        <title>
+          <formatted-text>
+            <run bold='true' fontcolor='#222222' fontname='Tableau Medium' fontsize='12'>Two-arm power curve</run>
+          </formatted-text>
+        </title>
+      </layout-options>
+      <table>
+        <view>
+          <datasources>
+            <datasource caption='Champion / challenger power' name='federated.power' />
+          </datasources>
+          <datasource-dependencies datasource='federated.power'>
+      <column datatype='integer' name='[n_accounts_per_arm]' role='dimension' type='quantitative' />
+      <column datatype='real' name='[power_pct]' role='measure' type='quantitative' />
+            <column-instance column='[n_accounts_per_arm]' derivation='None' name='[none:n_accounts_per_arm:qk]' pivot='key' type='quantitative' />
+            <column-instance column='[power_pct]' derivation='Sum' name='[sum:power_pct:qk]' pivot='key' type='quantitative' />
+          </datasource-dependencies>
+          <aggregation value='true' />
+        </view>
+        <style>
+          <style-rule element='gridline'>
+            <format attr='stroke-size' scope='rows' value='0' />
+            <format attr='stroke-size' scope='cols' value='0' />
+          </style-rule>
+          <style-rule element='table-div'>
+            <format attr='stroke-size' scope='rows' value='0' />
+            <format attr='line-visibility' scope='rows' value='off' />
+            <format attr='stroke-size' scope='cols' value='0' />
+            <format attr='line-visibility' scope='cols' value='off' />
+          </style-rule>
+          <style-rule element='mark'>
+            <format attr='mark-labels-show' value='true' />
+            <format attr='mark-labels-cull' value='true' />
+          </style-rule>
+          <style-rule element='worksheet'>
+            <format attr='display-field-labels' scope='cols' value='false' />
+            <format attr='display-field-labels' scope='rows' value='false' />
+            <format attr='font-family' value='Tableau Book' />
+            <format attr='color' value='#222222' />
+          </style-rule>
+        </style>
+        <panes>
+          <pane selection-relaxation-option='selection-relaxation-allow'>
+            <view>
+              <breakdown value='auto' />
+            </view>
+            <mark class='Line' />
+          </pane>
+        </panes>
+        <rows>[federated.power].[sum:power_pct:qk]</rows>
+        <cols>[federated.power].[none:n_accounts_per_arm:qk]</cols>
+      </table>
+    </worksheet>
+    <worksheet name='Calibration'>
+      <layout-options>
+        <title>
+          <formatted-text>
+            <run bold='true' fontcolor='#222222' fontname='Tableau Medium' fontsize='12'>Reliability: predicted vs observed</run>
+          </formatted-text>
+        </title>
+      </layout-options>
+      <table>
+        <view>
+          <datasources>
+            <datasource caption='Calibration' name='federated.calibration' />
+          </datasources>
+          <datasource-dependencies datasource='federated.calibration'>
+      <column datatype='string' name='[method]' role='dimension' type='nominal' />
+      <column datatype='real' name='[mean_predicted_pct]' role='measure' type='quantitative' />
+      <column datatype='real' name='[observed_pct]' role='measure' type='quantitative' />
+            <column-instance column='[method]' derivation='None' name='[none:method:nk]' pivot='key' type='nominal' />
+            <column-instance column='[mean_predicted_pct]' derivation='Sum' name='[sum:mean_predicted_pct:qk]' pivot='key' type='quantitative' />
+            <column-instance column='[observed_pct]' derivation='Sum' name='[sum:observed_pct:qk]' pivot='key' type='quantitative' />
+          </datasource-dependencies>
+          <aggregation value='true' />
+        </view>
+        <style>
+          <style-rule element='gridline'>
+            <format attr='stroke-size' scope='rows' value='0' />
+            <format attr='stroke-size' scope='cols' value='0' />
+          </style-rule>
+          <style-rule element='table-div'>
+            <format attr='stroke-size' scope='rows' value='0' />
+            <format attr='line-visibility' scope='rows' value='off' />
+            <format attr='stroke-size' scope='cols' value='0' />
+            <format attr='line-visibility' scope='cols' value='off' />
+          </style-rule>
+          <style-rule element='mark'>
+            <format attr='mark-labels-show' value='true' />
+            <format attr='mark-labels-cull' value='true' />
+          </style-rule>
+          <style-rule element='worksheet'>
+            <format attr='display-field-labels' scope='cols' value='false' />
+            <format attr='display-field-labels' scope='rows' value='false' />
+            <format attr='font-family' value='Tableau Book' />
+            <format attr='color' value='#222222' />
+          </style-rule>
+        </style>
+        <panes>
+          <pane selection-relaxation-option='selection-relaxation-allow'>
+            <view>
+              <breakdown value='auto' />
+            </view>
+            <mark class='Circle' />
+            <encodings>
+              <color column='[federated.calibration].[none:method:nk]' />
+            </encodings>
+          </pane>
+        </panes>
+        <rows>[federated.calibration].[sum:observed_pct:qk]</rows>
+        <cols>[federated.calibration].[sum:mean_predicted_pct:qk]</cols>
+      </table>
+    </worksheet>
+  </worksheets>
+  <dashboards>
+    <dashboard name='Breakpoint — Policy Brief'>
+      <style />
+      <size maxheight='1000' maxwidth='1500' minheight='1000' minwidth='1500' sizing-mode='fixed' />
+      <zones>
+        <zone h='100000' w='100000' x='0' y='0' id='1' param='vert' type-v2='layout-flow'>
+          <zone h='7000' w='96000' x='2000' y='0' id='2' type-v2='text' forceUpdate='true'>
+            <formatted-text>
+              <run>BREAKPOINT  /  GROW · HOLD · RESTRICT
+Calibrated credit risk, priced as a decision</run>
+            </formatted-text>
+            <zone-style>
+              <format attr='border-style' value='none' />
+              <format attr='padding' value='12' />
+            </zone-style>
+          </zone>
+          <zone h='8000' w='96000' x='2000' y='7000' id='3' type-v2='text' forceUpdate='true'>
+            <formatted-text>
+              <run>Grow ≤ 0.000827  ·  Hold ≤ 0.040517  ·  Restrict &gt; 0.040517     Worst-case regret 1.83% vs 4.26% for binary minimax</run>
+            </formatted-text>
+            <zone-style>
+              <format attr='border-style' value='none' />
+              <format attr='padding' value='12' />
+            </zone-style>
+          </zone>
+          <zone h='34000' w='31000' x='2000' y='16000' id='4' name='Profit uplift' show-title='true'>
+            <zone-style>
+              <format attr='border-style' value='none' />
+              <format attr='margin' value='8' />
+              <format attr='padding' value='12' />
+              <format attr='background-color' value='#ffffff' />
+            </zone-style>
+          </zone>
+          <zone h='34000' w='31000' x='34000' y='16000' id='5' name='Action mix' show-title='true'>
+            <zone-style>
+              <format attr='border-style' value='none' />
+              <format attr='margin' value='8' />
+              <format attr='padding' value='12' />
+              <format attr='background-color' value='#ffffff' />
+            </zone-style>
+          </zone>
+          <zone h='34000' w='31000' x='66000' y='16000' id='6' name='Power' show-title='true'>
+            <zone-style>
+              <format attr='border-style' value='none' />
+              <format attr='margin' value='8' />
+              <format attr='padding' value='12' />
+              <format attr='background-color' value='#ffffff' />
+            </zone-style>
+          </zone>
+          <zone h='45000' w='62000' x='2000' y='51000' id='7' name='Threshold curve' show-title='true'>
+            <zone-style>
+              <format attr='border-style' value='none' />
+              <format attr='margin' value='8' />
+              <format attr='padding' value='12' />
+              <format attr='background-color' value='#ffffff' />
+            </zone-style>
+          </zone>
+          <zone h='45000' w='32000' x='65000' y='51000' id='8' name='Calibration' show-title='true'>
+            <zone-style>
+              <format attr='border-style' value='none' />
+              <format attr='margin' value='8' />
+              <format attr='padding' value='12' />
+              <format attr='background-color' value='#ffffff' />
+            </zone-style>
+          </zone>
+          <zone h='3000' w='96000' x='2000' y='97000' id='9' type-v2='text' forceUpdate='true'>
+            <formatted-text>
+              <run>Source: reports/metrics.json, reports/policy.json, reports/bootstrap.json. Population-weighted OOF evidence; economics are labelled assumptions.</run>
+            </formatted-text>
+            <zone-style>
+              <format attr='border-style' value='none' />
+              <format attr='padding' value='12' />
+            </zone-style>
+          </zone>
+          <zone-style>
+            <format attr='border-style' value='none' />
+            <format attr='padding' value='8' />
+            <format attr='background-color' value='#f4f1eb' />
+          </zone-style>
+        </zone>
+      </zones>
+    </dashboard>
+  </dashboards>
+  <windows source-height='30'>
+    <window class='worksheet' hidden='true' name='Profit uplift'>
+      <cards>
+        <edge name='left'>
+          <strip size='160'>
+            <card type='pages' />
+            <card type='filters' />
+            <card type='marks' />
+          </strip>
+        </edge>
+        <edge name='top'>
+          <strip size='2147483647'>
+            <card type='columns' />
+          </strip>
+          <strip size='2147483647'>
+            <card type='rows' />
+          </strip>
+          <strip size='31'>
+            <card type='title' />
+          </strip>
+        </edge>
+      </cards>
+    </window>
+    <window class='worksheet' hidden='true' name='Action mix'>
+      <cards>
+        <edge name='left'>
+          <strip size='160'>
+            <card type='pages' />
+            <card type='filters' />
+            <card type='marks' />
+          </strip>
+        </edge>
+        <edge name='top'>
+          <strip size='2147483647'>
+            <card type='columns' />
+          </strip>
+          <strip size='2147483647'>
+            <card type='rows' />
+          </strip>
+          <strip size='31'>
+            <card type='title' />
+          </strip>
+        </edge>
+      </cards>
+    </window>
+    <window class='worksheet' hidden='true' name='Threshold curve'>
+      <cards>
+        <edge name='left'>
+          <strip size='160'>
+            <card type='pages' />
+            <card type='filters' />
+            <card type='marks' />
+          </strip>
+        </edge>
+        <edge name='top'>
+          <strip size='2147483647'>
+            <card type='columns' />
+          </strip>
+          <strip size='2147483647'>
+            <card type='rows' />
+          </strip>
+          <strip size='31'>
+            <card type='title' />
+          </strip>
+        </edge>
+      </cards>
+    </window>
+    <window class='worksheet' hidden='true' name='Power'>
+      <cards>
+        <edge name='left'>
+          <strip size='160'>
+            <card type='pages' />
+            <card type='filters' />
+            <card type='marks' />
+          </strip>
+        </edge>
+        <edge name='top'>
+          <strip size='2147483647'>
+            <card type='columns' />
+          </strip>
+          <strip size='2147483647'>
+            <card type='rows' />
+          </strip>
+          <strip size='31'>
+            <card type='title' />
+          </strip>
+        </edge>
+      </cards>
+    </window>
+    <window class='worksheet' hidden='true' name='Calibration'>
+      <cards>
+        <edge name='left'>
+          <strip size='160'>
+            <card type='pages' />
+            <card type='filters' />
+            <card type='marks' />
+          </strip>
+        </edge>
+        <edge name='top'>
+          <strip size='2147483647'>
+            <card type='columns' />
+          </strip>
+          <strip size='2147483647'>
+            <card type='rows' />
+          </strip>
+          <strip size='31'>
+            <card type='title' />
+          </strip>
+        </edge>
+      </cards>
+    </window>
+    <window class='dashboard' maximized='true' name='Breakpoint — Policy Brief'>
+      <viewpoints>
+        <viewpoint name='Profit uplift'>
+          <zoom type='entire-view' />
+        </viewpoint>
+        <viewpoint name='Action mix'>
+          <zoom type='entire-view' />
+        </viewpoint>
+        <viewpoint name='Threshold curve'>
+          <zoom type='entire-view' />
+        </viewpoint>
+        <viewpoint name='Power'>
+          <zoom type='entire-view' />
+        </viewpoint>
+        <viewpoint name='Calibration'>
+          <zoom type='entire-view' />
+        </viewpoint>
+      </viewpoints>
+      <active id='-1' />
+      <device-preview selected='Desktop' />
+    </window>
+  </windows>
+</workbook>

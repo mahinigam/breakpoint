@@ -1,7 +1,7 @@
 PY ?= .venv/bin/python
 PIP ?= .venv/bin/pip
 
-.PHONY: help setup data features train calibrate decide bootstrap power monitor explain tableau demo score-demo docs verify-docs test verify pipeline all clean
+.PHONY: help setup data features train calibrate decide bootstrap power monitor explain tableau tableau-workbook demo score-demo docs verify-docs test verify pipeline all clean
 
 help:
 	@echo "Breakpoint targets"
@@ -16,7 +16,8 @@ help:
 	@echo "  make power        Champion/challenger power analysis"
 	@echo "  make monitor      Customer-level PSI and action-mix monitoring"
 	@echo "  make explain      SHAP on the saved model + reason codes"
-	@echo "  make tableau      Export the 12 Tableau aggregate CSVs"
+	@echo "  make tableau      Export aggregates and rebuild the packaged Tableau workbook"
+	@echo "  make tableau-workbook  Rebuild only dashboards/breakpoint_policy.twb[x]"
 	@echo "  make demo         Build docs/index.html from the reports"
 	@echo "  make score-demo   Score data/demo/scoring_input.csv"
 	@echo "  make docs         Render generated docs blocks"
@@ -61,6 +62,10 @@ explain:
 
 tableau:
 	$(PY) -m src.decision.export_dashboard_data
+	$(PY) scripts/build_tableau_workbook.py
+
+tableau-workbook:
+	$(PY) scripts/build_tableau_workbook.py
 
 demo:
 	$(PY) -m src.demo.build_site

@@ -14,6 +14,10 @@ canonical CSV reports. Do not edit these files by hand; they are overwritten by
 and environment. The build guide is
 [`docs/TABLEAU_DASHBOARD_GUIDE.md`](../../docs/TABLEAU_DASHBOARD_GUIDE.md).
 
+The packaged workbook is [`dashboards/breakpoint_policy.twbx`](../breakpoint_policy.twbx);
+`make tableau-workbook` regenerates it from these CSVs. Publishing it to Tableau
+Public requires a signed-in Tableau account.
+
 ## Files
 
 | File | Grain | Notes |

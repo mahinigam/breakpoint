@@ -69,7 +69,7 @@ A higher cap buys lower regret but increases exposure and distributional risk. T
 3. **Policy review.** Confirm the margin, loss, and exposure assumptions with Finance and Credit Policy. Re-run the optimizer with the approved values.
 4. **Fairness and adverse-action review.** Map anonymized features to business definitions; run disparate-impact and reason-code reviews before any Restrict action.
 5. **Monitoring.** Track feature PSI, score PSI, action mix, weighted default rate, and the explicit retrain trigger. The current temporal holdout shows no trigger, but that is not a guarantee.
-6. **Tableau reporting.** Publish the aggregate dashboard from `dashboards/data/`; do not expose customer-level data.
+6. **Tableau reporting.** Use the packaged aggregate workbook at `dashboards/breakpoint_policy.twbx`; publish it only from a signed-in Tableau account. Do not expose customer-level data.
 
 ## Decision requested
 

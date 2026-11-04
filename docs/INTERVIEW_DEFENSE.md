@@ -148,9 +148,9 @@ No. The features are anonymized, and the reason codes are family-level. A produc
 
 ## 9. Tableau and reporting
 
-**What does the Tableau export contain?**
+**What does the Tableau deliverable contain?**
 
-12 aggregate CSVs: threshold curve, policy markers, action mix, operating characteristics, score histogram, calibration, sensitivity, drift, KPI, policy card, bootstrap, and power. `manifest.json` records row counts and columns. All are generated from canonical reports.
+12 aggregate CSVs plus a packaged workbook. The CSVs are threshold curve, policy markers, action mix, operating characteristics, score histogram, calibration, sensitivity, drift, KPI, policy card, bootstrap, and power. `manifest.json` records row counts and columns. All are generated from canonical reports. The committed `dashboards/breakpoint_policy.twbx` contains five worksheets and the **Breakpoint — Policy Brief** dashboard, with the CSVs embedded under `Data/`.
 
 **Why not connect Tableau directly to the 6.2 GB parquet?**
 
@@ -158,17 +158,17 @@ A reviewer needs a fast, aggregate, privacy-safe workbook. The 257 KB threshold 
 
 **Is the dashboard published?**
 
-The repository prepares the data and a build guide. Publishing to Tableau Public requires the owner's Tableau account, so the repo does not claim a live URL. The static reviewer demo in `docs/index.html` is the no-account fallback.
+The repository ships a publish-ready packaged workbook and a build guide. Publishing to Tableau Public requires the owner's signed-in Tableau account, so the repo does not claim a public Tableau URL. The live static reviewer demo at `https://mahinigam.github.io/breakpoint/` is the no-account fallback.
 
 ## 10. Engineering and limitations
 
 **What does the test suite cover?**
 
-48 tests: profit algebra and action economics, threshold grids, minimax behavior, guardrails, corrected DeLong, weighted bootstrap AUC, calibration bins/ECE, PSI and drift triggers, scoring contract, report invariants, determinism, and leakage.
+52 tests: profit algebra and action economics, threshold grids, minimax behavior, guardrails, corrected DeLong, weighted bootstrap AUC, calibration bins/ECE, PSI and drift triggers, scoring contract, report invariants, determinism, and leakage.
 
 **What is committed vs generated?**
 
-The model artifacts, reports, figures, Tableau aggregates, and static demo are committed so a reviewer can run the fast path. The raw data, parquet files, processed features, and OOF predictions are not committed.
+The model artifacts, reports, figures, Tableau aggregates, packaged workbook, and static demo are committed so a reviewer can run the fast path. The raw data, parquet files, processed features, and OOF predictions are not committed.
 
 **What is the biggest limitation?**
 
