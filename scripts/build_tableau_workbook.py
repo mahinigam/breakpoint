@@ -81,6 +81,53 @@ DATASETS: dict[str, dict[str, Any]] = {
     },
 }
 
+FIELD_CAPTIONS = {
+    "scenario_label": "Scenario",
+    "action": "Action",
+    "method": "Method",
+    "profit_uplift_pct": "Profit uplift vs binary (%)",
+    "share_pct": "Share (%)",
+    "probability_cutoff": "Calibrated PD cutoff",
+    "profit_millions": "Expected profit ($M)",
+    "n_accounts_per_arm": "Accounts per arm",
+    "power_pct": "Power (%)",
+    "mean_predicted_pct": "Mean predicted PD (%)",
+    "observed_pct": "Observed default rate (%)",
+}
+
+PALETTES = {
+    "kpi": {
+        "scenario_label": {
+            "Conservative": "#4C78A8",
+            "Moderate": "#F2A541",
+            "Aggressive": "#2F6B4F",
+            "Stress": "#9B3A32",
+        }
+    },
+    "action_mix": {
+        "action": {
+            "grow": "#2F6B4F",
+            "hold": "#2F5D7C",
+            "restrict": "#9B3A32",
+        }
+    },
+    "threshold": {
+        "scenario_label": {
+            "Conservative": "#4C78A8",
+            "Moderate": "#F2A541",
+            "Aggressive": "#2F6B4F",
+            "Stress": "#9B3A32",
+        }
+    },
+    "calibration": {
+        "method": {
+            "raw": "#6B6458",
+            "platt": "#F2A541",
+            "isotonic": "#2F6B4F",
+        }
+    },
+}
+
 # ---------------------------------------------------------------------------
 # XML primitives
 # ---------------------------------------------------------------------------
@@ -97,8 +144,10 @@ def _esc(value: str) -> str:
 
 
 def _column_decl(name: str, datatype: str, role: str, type_: str, indent: str = "      ") -> str:
+    caption = FIELD_CAPTIONS.get(name)
+    caption_attr = f" caption='{_esc(caption)}'" if caption else ""
     return (
-        f"{indent}<column datatype='{datatype}' name='[{name}]' "
+        f"{indent}<column datatype='{datatype}' name='[{name}]'{caption_attr} "
         f"role='{role}' type='{type_}' />"
     )
 
@@ -139,6 +188,21 @@ def _datasource(ds_name: str, spec: dict[str, Any], directory: str) -> str:
         _column_decl(name, datatype, role, type_)
         for name, datatype, role, type_ in spec["columns"]
     )
+    palette = PALETTES.get(ds_name, {})
+    palette_xml = ""
+    if palette:
+        palette_lines = ["      <style>", "        <style-rule element='mark'>"]
+        for field, colors in palette.items():
+            palette_lines.append(
+                f"          <encoding attr='color' field='[{_instance_name(field, 'none')}]' type='palette'>"
+            )
+            for member, color in colors.items():
+                palette_lines.append(f"            <map to='{color}'>")
+                palette_lines.append(f"              <bucket>&quot;{member}&quot;</bucket>")
+                palette_lines.append("            </map>")
+            palette_lines.append("          </encoding>")
+        palette_lines.extend(["        </style-rule>", "      </style>"])
+        palette_xml = "\n" + "\n".join(palette_lines)
     return f"""    <datasource caption='{_esc(spec["caption"])}' inline='true' name='federated.{ds_name}' version='18.1'>
       <connection class='federated'>
         <named-connections>
@@ -152,14 +216,23 @@ def _datasource(ds_name: str, spec: dict[str, Any], directory: str) -> str:
           </columns>
         </relation>
       </connection>
-{declarations}
+{declarations}{palette_xml}
     </datasource>"""
+
+
+def _title_xml(title: str | list[tuple[str, str | None]]) -> str:
+    runs = [(title, None)] if isinstance(title, str) else title
+    return "\n".join(
+        f"            <run bold='true' fontcolor='{color or '#222222'}' "
+        f"fontname='Tableau Medium' fontsize='12'>{_esc(text)}</run>"
+        for text, color in runs
+    )
 
 
 def _worksheet(
     *,
     name: str,
-    title: str,
+    title: str | list[tuple[str, str | None]],
     ds_name: str,
     fields: list[tuple[str, str]],
     rows: str,
@@ -203,7 +276,7 @@ def _worksheet(
       <layout-options>
         <title>
           <formatted-text>
-            <run bold='true' fontcolor='#222222' fontname='Tableau Medium' fontsize='12'>{_esc(title)}</run>
+{_title_xml(title)}
           </formatted-text>
         </title>
       </layout-options>
@@ -379,7 +452,14 @@ def _workbook(directory: str, policy_text: str) -> str:
         ),
         _worksheet(
             name="Action mix",
-            title="Grow / Hold / Restrict mix",
+            title=[
+                ("Action mix · ", None),
+                ("Grow", "#2F6B4F"),
+                (" / ", None),
+                ("Hold", "#2F5D7C"),
+                (" / ", None),
+                ("Restrict", "#9B3A32"),
+            ],
             ds_name="action_mix",
             fields=[
                 ("scenario_label", "none"),
@@ -393,7 +473,16 @@ def _workbook(directory: str, policy_text: str) -> str:
         ),
         _worksheet(
             name="Threshold curve",
-            title="Profit by cutoff (cutoff ≤ 25%)",
+            title=[
+                ("Profit by cutoff · ", None),
+                ("Conservative", "#4C78A8"),
+                (" / ", None),
+                ("Moderate", "#F2A541"),
+                (" / ", None),
+                ("Aggressive", "#2F6B4F"),
+                (" / ", None),
+                ("Stress", "#9B3A32"),
+            ],
             ds_name="threshold",
             fields=[
                 ("scenario_label", "none"),
@@ -421,7 +510,14 @@ def _workbook(directory: str, policy_text: str) -> str:
         ),
         _worksheet(
             name="Calibration",
-            title="Reliability: predicted vs observed",
+            title=[
+                ("Reliability · ", None),
+                ("raw", "#6B6458"),
+                (" / ", None),
+                ("Platt", "#F2A541"),
+                (" / ", None),
+                ("isotonic", "#2F6B4F"),
+            ],
             ds_name="calibration",
             fields=[
                 ("method", "none"),

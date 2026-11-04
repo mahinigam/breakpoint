@@ -74,15 +74,23 @@ def _table(headers: list[str], rows: list[list[str]], caption: str = "") -> str:
     body = "".join(
         "<tr>"
         + "".join(
-            f"<td class=\"{'num' if index > 0 else ''}\">{cell}</td>"
+            f"<td data-label=\"{_escape(headers[index])}\" class=\"{'num' if index > 0 else ''}\">"
+            f"{cell}</td>"
             for index, cell in enumerate(row)
         )
         + "</tr>"
         for row in rows
     )
     caption_html = f"<caption>{_escape(caption)}</caption>" if caption else ""
+    label = _escape(caption or "Data table")
+    table_class = "data-table wide"
+    if len(headers) >= 6:
+        table_class += " xwide"
+    if len(headers) < 4:
+        table_class = "data-table"
     return (
-        f"<div class=\"table-wrap\"><table class=\"data-table\">{caption_html}"
+        f"<div class=\"table-wrap\" tabindex=\"0\" role=\"group\" aria-label=\"{label}\">"
+        f"<table class=\"{table_class}\">{caption_html}"
         f"<thead><tr>{head}</tr></thead><tbody>{body}</tbody></table></div>"
     )
 
@@ -272,8 +280,8 @@ def build_site() -> Path:
   --font-display: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
   --font-text: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
   --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-  --step--1: 0.8rem;
-  --step-0: 1rem;
+  --step--1: 0.875rem;
+  --step-0: 1.0625rem;
   --step-1: 1.25rem;
   --step-2: 1.5625rem;
   --step-3: 1.953rem;
@@ -293,7 +301,7 @@ def build_site() -> Path:
   --surface: #fffdf7;
   --ink: #171512;
   --ink-2: #4f4a42;
-  --ink-3: #6b6458;
+  --ink-3: #575146;
   --line: #d9d2c4;
   --accent: #a63a2f;
   --grow: #2f6b4f;
@@ -340,21 +348,21 @@ a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
   font-family: var(--font-display); font-size: var(--step-2); letter-spacing: -0.02em;
 }
 .wordmark span { color: var(--accent); }
-.masthead p, .masthead nav { font-family: var(--font-mono); font-size: var(--step--1); }
-.masthead nav { display: flex; flex-wrap: wrap; gap: var(--space-s); }
-.masthead nav a { color: var(--ink-2); text-decoration: none; }
+.masthead p { font-family: var(--font-text); font-size: 1rem; color: var(--ink-2); margin: 0; }
+.masthead nav { font-family: var(--font-mono); font-size: var(--step--1); display: flex; flex-wrap: wrap; gap: var(--space-s); }
+.masthead nav a { color: var(--ink-2); text-decoration: none; padding-block: var(--space-3xs); }
 .masthead nav a:hover { color: var(--accent); }
 .rule { border: 0; border-top: var(--border); margin: 0; }
 .hero { padding: var(--space-2xl) 0 var(--space-xl); border-bottom: var(--border); }
-.eyebrow {
-  font-family: var(--font-mono); font-size: var(--step--1); letter-spacing: 0.08em;
-  text-transform: uppercase; color: var(--accent); margin: 0 0 var(--space-s);
+.dataset {
+  font-family: var(--font-mono); font-size: var(--step--1); letter-spacing: 0.01em;
+  color: var(--accent); margin: 0 0 var(--space-s);
 }
 h1, h2, h3 { font-family: var(--font-display); font-weight: 600; line-height: 1.05; margin: 0; }
 h1 { font-size: clamp(2.6rem, 6vw, 4.8rem); letter-spacing: -0.035em; max-width: 18ch; }
 h2 { font-size: var(--step-4); letter-spacing: -0.02em; margin-bottom: var(--space-s); }
 h3 { font-size: var(--step-2); letter-spacing: -0.01em; }
-.deck { font-size: var(--step-1); max-width: 58ch; color: var(--ink-2); margin: var(--space-m) 0 0; }
+.deck { font-size: var(--step-1); max-width: 48ch; color: var(--ink-2); margin: var(--space-m) 0 0; }
 .hero-meta { font-family: var(--font-mono); font-size: var(--step--1); color: var(--ink-3); margin-top: var(--space-m); }
 .metrics {
   display: grid; grid-template-columns: repeat(4, 1fr);
@@ -371,7 +379,7 @@ h3 { font-size: var(--step-2); letter-spacing: -0.01em; }
 .metric small { display: block; font-family: var(--font-text); font-size: var(--step--1); color: var(--ink-2); margin-top: var(--space-3xs); }
 section { padding: var(--space-2xl) 0; border-bottom: var(--border); }
 .section-head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-m); margin-bottom: var(--space-l); }
-.section-head p { font-family: var(--font-mono); font-size: var(--step--1); color: var(--ink-3); max-width: 40ch; margin: 0; }
+.section-head p { font-family: var(--font-text); font-size: 1rem; line-height: 1.5; color: var(--ink-2); max-width: 42ch; margin: 0; }
 .prose { max-width: 68ch; }
 .prose p { margin: 0 0 var(--space-s); }
 .prose strong { font-weight: 700; }
@@ -389,15 +397,16 @@ section { padding: var(--space-2xl) 0; border-bottom: var(--border); }
 .ruler-key .grow { color: var(--grow); } .ruler-key .hold { color: var(--hold); } .ruler-key .restrict { color: var(--restrict); }
 .quote {
   border-left: 3px solid var(--accent); padding-left: var(--space-m);
-  font-size: var(--step-2); line-height: 1.25; max-width: 34ch; margin: var(--space-xl) 0 0;
+  font-size: clamp(1.25rem, 2.2vw, 1.5rem); line-height: 1.3; max-width: 42ch; margin: var(--space-xl) 0 0;
 }
 .quote cite { display: block; font-family: var(--font-mono); font-size: var(--step--1); font-style: normal; color: var(--ink-3); margin-top: var(--space-s); }
 .table-wrap { max-width: 100%; overflow-x: auto; margin: var(--space-m) 0 var(--space-l); }
-.data-table { width: 100%; border-collapse: collapse; font-family: var(--font-mono); font-size: 0.86rem; }
+.table-wrap:focus-visible, pre:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.data-table { width: 100%; border-collapse: collapse; font-family: var(--font-mono); font-size: 0.875rem; }
 .data-table caption { text-align: left; font-family: var(--font-text); font-size: var(--step--1); color: var(--ink-3); padding-bottom: var(--space-2xs); }
-.data-table th { text-align: left; font-weight: 600; border-top: 2px solid var(--ink); border-bottom: var(--border); padding: var(--space-2xs) var(--space-xs); white-space: nowrap; }
-.data-table td { border-bottom: var(--border); padding: var(--space-2xs) var(--space-xs); vertical-align: top; }
-.data-table .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.data-table th { text-align: left; font-weight: 600; border-top: 2px solid var(--ink); border-bottom: var(--border); padding: var(--space-2xs) var(--space-xs); }
+.data-table td { border-bottom: var(--border); padding: var(--space-2xs) var(--space-xs); vertical-align: top; overflow-wrap: anywhere; }
+.data-table .num { text-align: right; font-variant-numeric: tabular-nums; }
 .data-table tbody tr:hover { background: rgba(23, 21, 18, 0.035); }
 .figure-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--space-xl) var(--space-l); margin-top: var(--space-l); }
 figure { margin: 0; min-width: 0; }
@@ -411,10 +420,10 @@ figcaption { font-family: var(--font-mono); font-size: var(--step--1); color: va
 .reason-id { font-family: var(--font-mono); font-size: var(--step--1); color: var(--ink-3); margin: 0 0 var(--space-2xs); }
 .reason-list { margin: 0; padding-left: var(--space-m); }
 .reason-list li { margin-bottom: var(--space-2xs); }
-pre { background: var(--surface); border-left: 3px solid var(--accent); padding: var(--space-s); overflow-x: auto; font-family: var(--font-mono); font-size: 0.82rem; line-height: 1.6; }
+pre { background: var(--surface); border-left: 3px solid var(--accent); padding: var(--space-s); overflow-x: auto; font-family: var(--font-mono); font-size: 0.875rem; line-height: 1.6; }
 code { font-family: var(--font-mono); }
-footer { padding: var(--space-l) 0 var(--space-2xl); font-family: var(--font-mono); font-size: var(--step--1); color: var(--ink-3); }
-footer p { max-width: 80ch; }
+footer { padding: var(--space-l) 0 var(--space-2xl); font-family: var(--font-text); font-size: 0.95rem; color: var(--ink-2); }
+footer p { max-width: 72ch; }
 @media (max-width: 820px) {
   .metrics { grid-template-columns: 1fr 1fr; }
   .metric:nth-child(2) { border-right: 0; }
@@ -422,17 +431,66 @@ footer p { max-width: 80ch; }
   .figure-grid, .three-col { grid-template-columns: 1fr; }
   .section-head { display: block; }
   .section-head p { margin-top: var(--space-2xs); }
-  .band { padding: var(--space-2xs); }
+  .ruler-bar { grid-template-columns: 1fr; }
+  .band {
+    min-height: 56px; padding: var(--space-xs) var(--space-s);
+    flex-direction: row; align-items: baseline; justify-content: space-between; gap: var(--space-s);
+  }
   .band b { font-size: var(--step-0); }
-  .band span { font-size: 0.7rem; }
-  .ruler-key { display: flex; }
+  .band span { font-size: var(--step--1); }
+  .ruler-key { display: none; }
 }
+@media (max-width: 840px) {
+  .data-table.xwide { display: block; }
+  .data-table.xwide caption { display: block; }
+  .data-table.xwide thead { display: none; }
+  .data-table.xwide tbody, .data-table.xwide tr { display: block; }
+  .data-table.xwide tr { border-top: 2px solid var(--ink); padding: var(--space-2xs) 0; }
+  .data-table.xwide td {
+    display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+    gap: var(--space-s); padding: var(--space-3xs) 0; border-bottom: 0;
+  }
+  .data-table.xwide td::before {
+    content: attr(data-label); font-family: var(--font-mono);
+    font-size: var(--step--1); color: var(--ink-3);
+  }
+  .data-table.xwide td:first-child {
+    display: block; font-weight: 600; font-size: var(--step-0);
+    padding-bottom: var(--space-2xs);
+  }
+  .data-table.xwide td:first-child::before { display: none; }
+  .data-table.xwide .num { text-align: left; }
+}
+
+@media (max-width: 640px) {
+  .data-table.wide { display: block; }
+  .data-table.wide caption { display: block; }
+  .data-table.wide thead { display: none; }
+  .data-table.wide tbody, .data-table.wide tr { display: block; }
+  .data-table.wide tr { border-top: 2px solid var(--ink); padding: var(--space-2xs) 0; }
+  .data-table.wide td {
+    display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+    gap: var(--space-s); padding: var(--space-3xs) 0; border-bottom: 0;
+  }
+  .data-table.wide td::before {
+    content: attr(data-label); font-family: var(--font-mono);
+    font-size: var(--step--1); color: var(--ink-3);
+  }
+  .data-table.wide td:first-child {
+    display: block; font-weight: 600; font-size: var(--step-0);
+    padding-bottom: var(--space-2xs);
+  }
+  .data-table.wide td:first-child::before { display: none; }
+  .data-table.wide .num { text-align: left; }
+}
+
 @media (max-width: 520px) {
   .wrap { width: calc(100% - 2 * var(--space-s)); }
+  h2 { font-size: 1.8rem; }
   .masthead { display: block; }
   .masthead nav { margin-top: var(--space-2xs); }
   .ruler-bar { grid-template-columns: 1fr; }
-  .band { min-height: 64px; }
+  .band { min-height: 64px; padding: var(--space-s) var(--space-m); }
   .band span { display: none; }
   .ruler-key { display: none; }
   .metrics { grid-template-columns: 1fr; }
@@ -455,9 +513,9 @@ footer p { max-width: 80ch; }
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Breakpoint — a profit-optimal credit policy</title>
-<meta name="description" content="A calibrated LightGBM credit-risk model and a constrained three-action Grow/Hold/Restrict policy, evaluated on 458,913 Amex accounts.">
+<meta name="description" content="Grow the safest 60%, hold the middle 31%, exit the riskiest 9%. A calibrated LightGBM credit-risk model and constrained three-action policy on 458,913 Amex accounts.">
 <meta property="og:title" content="Breakpoint — a profit-optimal credit policy">
-<meta property="og:description" content="Three actions, not approve/decline. Worst-case regret 1.83% versus 4.26% for binary minimax.">
+<meta property="og:description" content="Grow 60%, hold 31%, exit 9%. Worst-case regret 1.83% versus 4.26% for binary minimax.">
 <meta property="og:type" content="website">
 <meta name="theme-color" content="#f4f0e6">
 <style>{css}</style>
@@ -478,18 +536,18 @@ footer p { max-width: 80ch; }
   </nav>
 </header>
 
-<main id="main">
+<main id="main" tabindex="-1">
 <section class="hero wrap" aria-labelledby="hero-title">
-  <p class="eyebrow">Amex / Kaggle · 458,913 customers · 200 features</p>
-  <h1 id="hero-title">Grow the safe 60%. Hold the middle. Exit the riskiest 9%.</h1>
-  <p class="deck">A calibrated LightGBM ranks default risk. A constrained three-action policy turns that ranking into a portfolio decision — and beats a binary approve/decline threshold in every economic scenario.</p>
+  <p class="dataset">Amex / Kaggle · 458,913 customers · 200 features</p>
+  <h1 id="hero-title">Grow 60%. Hold 31%. Exit 9%.</h1>
+  <p class="deck">A calibrated LightGBM ranks default risk. A constrained three-action policy grows the safest 60%, holds the middle 31%, and exits the riskiest 9%. It beats a binary approve/decline threshold in every economic scenario.</p>
   <p class="hero-meta">Calibrated AUC {_num(calibrated_metrics.get("AUC"), 4)} · Amex metric {_num(calibrated_metrics.get("Amex Metric"), 4)} · Brier {_num(selected_calibration.get("brier"), 6)} · ECE(q) {_pct(selected_calibration.get("ece_quantile"), 3)}</p>
 
   <dl class="metrics" aria-label="Headline results">
-    <div class="metric"><dt>Profit uplift vs binary</dt><dd>{_pct(comparison["stress"]["profit_uplift_vs_binary"], 1, signed=True)}</dd><small>Stress scenario; {_pct(comparison["aggressive"]["profit_uplift_vs_binary"], 1, signed=True)} aggressive</small></div>
-    <div class="metric"><dt>Worst-case regret</dt><dd>{_pct(action_regret, 2)}</dd><small>Three-action robust vs {_pct(binary_regret, 2)} binary minimax</small></div>
-    <div class="metric"><dt>Expected-loss change</dt><dd>{_pct(stress["expected_loss_change"], 1, signed=True)}</dd><small>Exposure {_pct(stress["exposure_change"], 1, signed=True)} at the same time</small></div>
-    <div class="metric"><dt>Bootstrap advantage</dt><dd>{_money(bootstrap_stress["observed_difference"])}</dd><small>95% CI [{_money(bootstrap_stress["ci_low"])}, {_money(bootstrap_stress["ci_high"])}]</small></div>
+    <div class="metric"><dt>Profit uplift vs binary</dt><dd>{_pct(comparison["stress"]["profit_uplift_vs_binary"], 1, signed=True)}<small>Stress scenario; {_pct(comparison["aggressive"]["profit_uplift_vs_binary"], 1, signed=True)} aggressive</small></dd></div>
+    <div class="metric"><dt>Worst-case regret</dt><dd>{_pct(action_regret, 2)}<small>Three-action robust vs {_pct(binary_regret, 2)} binary minimax</small></dd></div>
+    <div class="metric"><dt>Expected-loss change</dt><dd>{_pct(stress["expected_loss_change"], 1, signed=True)}<small>Exposure {_pct(stress["exposure_change"], 1, signed=True)} at the same time</small></dd></div>
+    <div class="metric"><dt>Bootstrap advantage</dt><dd>{_money(bootstrap_stress["observed_difference"])}<small>95% CI [{_money(bootstrap_stress["ci_low"])}, {_money(bootstrap_stress["ci_high"])}]</small></dd></div>
   </dl>
 </section>
 
@@ -648,7 +706,7 @@ footer p { max-width: 80ch; }
   <div class="three-col">
     <div class="prose">
       <p><strong>Fast path.</strong> The committed model artifacts let you score a real-schema sample without retraining. The static page is rebuilt from committed reports.</p>
-      <pre><code>git clone {REPO_URL}.git
+      <pre tabindex="0"><code>git clone {REPO_URL}.git
 cd breakpoint
 make setup
 make score-demo
@@ -656,7 +714,7 @@ make demo</code></pre>
     </div>
     <div class="prose">
       <p><strong>Full path.</strong> Put the Amex CSV files in <code>data/raw/</code>, then run the pipeline. Training uses 5-fold OOF predictions, a final model, cross-fitted calibration, and the constrained policy.</p>
-      <pre><code>make pipeline
+      <pre tabindex="0"><code>make pipeline
 make tableau
 make verify</code></pre>
     </div>

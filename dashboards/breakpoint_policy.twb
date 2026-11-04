@@ -16,8 +16,26 @@
           </columns>
         </relation>
       </connection>
-      <column datatype='string' name='[scenario_label]' role='dimension' type='nominal' />
-      <column datatype='real' name='[profit_uplift_pct]' role='measure' type='quantitative' />
+      <column datatype='string' name='[scenario_label]' caption='Scenario' role='dimension' type='nominal' />
+      <column datatype='real' name='[profit_uplift_pct]' caption='Profit uplift vs binary (%)' role='measure' type='quantitative' />
+      <style>
+        <style-rule element='mark'>
+          <encoding attr='color' field='[none:scenario_label:nk]' type='palette'>
+            <map to='#4C78A8'>
+              <bucket>&quot;Conservative&quot;</bucket>
+            </map>
+            <map to='#F2A541'>
+              <bucket>&quot;Moderate&quot;</bucket>
+            </map>
+            <map to='#2F6B4F'>
+              <bucket>&quot;Aggressive&quot;</bucket>
+            </map>
+            <map to='#9B3A32'>
+              <bucket>&quot;Stress&quot;</bucket>
+            </map>
+          </encoding>
+        </style-rule>
+      </style>
     </datasource>
     <datasource caption='Action mix' inline='true' name='federated.action_mix' version='18.1'>
       <connection class='federated'>
@@ -34,9 +52,24 @@
           </columns>
         </relation>
       </connection>
-      <column datatype='string' name='[scenario_label]' role='dimension' type='nominal' />
-      <column datatype='string' name='[action]' role='dimension' type='nominal' />
-      <column datatype='real' name='[share_pct]' role='measure' type='quantitative' />
+      <column datatype='string' name='[scenario_label]' caption='Scenario' role='dimension' type='nominal' />
+      <column datatype='string' name='[action]' caption='Action' role='dimension' type='nominal' />
+      <column datatype='real' name='[share_pct]' caption='Share (%)' role='measure' type='quantitative' />
+      <style>
+        <style-rule element='mark'>
+          <encoding attr='color' field='[none:action:nk]' type='palette'>
+            <map to='#2F6B4F'>
+              <bucket>&quot;grow&quot;</bucket>
+            </map>
+            <map to='#2F5D7C'>
+              <bucket>&quot;hold&quot;</bucket>
+            </map>
+            <map to='#9B3A32'>
+              <bucket>&quot;restrict&quot;</bucket>
+            </map>
+          </encoding>
+        </style-rule>
+      </style>
     </datasource>
     <datasource caption='Threshold curve' inline='true' name='federated.threshold' version='18.1'>
       <connection class='federated'>
@@ -53,9 +86,27 @@
           </columns>
         </relation>
       </connection>
-      <column datatype='string' name='[scenario_label]' role='dimension' type='nominal' />
-      <column datatype='real' name='[probability_cutoff]' role='dimension' type='quantitative' />
-      <column datatype='real' name='[profit_millions]' role='measure' type='quantitative' />
+      <column datatype='string' name='[scenario_label]' caption='Scenario' role='dimension' type='nominal' />
+      <column datatype='real' name='[probability_cutoff]' caption='Calibrated PD cutoff' role='dimension' type='quantitative' />
+      <column datatype='real' name='[profit_millions]' caption='Expected profit ($M)' role='measure' type='quantitative' />
+      <style>
+        <style-rule element='mark'>
+          <encoding attr='color' field='[none:scenario_label:nk]' type='palette'>
+            <map to='#4C78A8'>
+              <bucket>&quot;Conservative&quot;</bucket>
+            </map>
+            <map to='#F2A541'>
+              <bucket>&quot;Moderate&quot;</bucket>
+            </map>
+            <map to='#2F6B4F'>
+              <bucket>&quot;Aggressive&quot;</bucket>
+            </map>
+            <map to='#9B3A32'>
+              <bucket>&quot;Stress&quot;</bucket>
+            </map>
+          </encoding>
+        </style-rule>
+      </style>
     </datasource>
     <datasource caption='Champion / challenger power' inline='true' name='federated.power' version='18.1'>
       <connection class='federated'>
@@ -71,8 +122,8 @@
           </columns>
         </relation>
       </connection>
-      <column datatype='integer' name='[n_accounts_per_arm]' role='dimension' type='quantitative' />
-      <column datatype='real' name='[power_pct]' role='measure' type='quantitative' />
+      <column datatype='integer' name='[n_accounts_per_arm]' caption='Accounts per arm' role='dimension' type='quantitative' />
+      <column datatype='real' name='[power_pct]' caption='Power (%)' role='measure' type='quantitative' />
     </datasource>
     <datasource caption='Calibration' inline='true' name='federated.calibration' version='18.1'>
       <connection class='federated'>
@@ -89,9 +140,24 @@
           </columns>
         </relation>
       </connection>
-      <column datatype='string' name='[method]' role='dimension' type='nominal' />
-      <column datatype='real' name='[mean_predicted_pct]' role='measure' type='quantitative' />
-      <column datatype='real' name='[observed_pct]' role='measure' type='quantitative' />
+      <column datatype='string' name='[method]' caption='Method' role='dimension' type='nominal' />
+      <column datatype='real' name='[mean_predicted_pct]' caption='Mean predicted PD (%)' role='measure' type='quantitative' />
+      <column datatype='real' name='[observed_pct]' caption='Observed default rate (%)' role='measure' type='quantitative' />
+      <style>
+        <style-rule element='mark'>
+          <encoding attr='color' field='[none:method:nk]' type='palette'>
+            <map to='#6B6458'>
+              <bucket>&quot;raw&quot;</bucket>
+            </map>
+            <map to='#F2A541'>
+              <bucket>&quot;platt&quot;</bucket>
+            </map>
+            <map to='#2F6B4F'>
+              <bucket>&quot;isotonic&quot;</bucket>
+            </map>
+          </encoding>
+        </style-rule>
+      </style>
     </datasource>
   </datasources>
   <worksheets>
@@ -109,8 +175,8 @@
             <datasource caption='KPI — scenario economics' name='federated.kpi' />
           </datasources>
           <datasource-dependencies datasource='federated.kpi'>
-      <column datatype='string' name='[scenario_label]' role='dimension' type='nominal' />
-      <column datatype='real' name='[profit_uplift_pct]' role='measure' type='quantitative' />
+      <column datatype='string' name='[scenario_label]' caption='Scenario' role='dimension' type='nominal' />
+      <column datatype='real' name='[profit_uplift_pct]' caption='Profit uplift vs binary (%)' role='measure' type='quantitative' />
             <column-instance column='[scenario_label]' derivation='None' name='[none:scenario_label:nk]' pivot='key' type='nominal' />
             <column-instance column='[profit_uplift_pct]' derivation='Sum' name='[sum:profit_uplift_pct:qk]' pivot='key' type='quantitative' />
           </datasource-dependencies>
@@ -157,7 +223,12 @@
       <layout-options>
         <title>
           <formatted-text>
-            <run bold='true' fontcolor='#222222' fontname='Tableau Medium' fontsize='12'>Grow / Hold / Restrict mix</run>
+            <run bold='true' fontcolor='#222222' fontname='Tableau Medium' fontsize='12'>Action mix · </run>
+            <run bold='true' fontcolor='#2F6B4F' fontname='Tableau Medium' fontsize='12'>Grow</run>
+            <run bold='true' fontcolor='#222222' fontname='Tableau Medium' fontsize='12'> / </run>
+            <run bold='true' fontcolor='#2F5D7C' fontname='Tableau Medium' fontsize='12'>Hold</run>
+            <run bold='true' fontcolor='#222222' fontname='Tableau Medium' fontsize='12'> / </run>
+            <run bold='true' fontcolor='#9B3A32' fontname='Tableau Medium' fontsize='12'>Restrict</run>
           </formatted-text>
         </title>
       </layout-options>
@@ -167,9 +238,9 @@
             <datasource caption='Action mix' name='federated.action_mix' />
           </datasources>
           <datasource-dependencies datasource='federated.action_mix'>
-      <column datatype='string' name='[scenario_label]' role='dimension' type='nominal' />
-      <column datatype='string' name='[action]' role='dimension' type='nominal' />
-      <column datatype='real' name='[share_pct]' role='measure' type='quantitative' />
+      <column datatype='string' name='[scenario_label]' caption='Scenario' role='dimension' type='nominal' />
+      <column datatype='string' name='[action]' caption='Action' role='dimension' type='nominal' />
+      <column datatype='real' name='[share_pct]' caption='Share (%)' role='measure' type='quantitative' />
             <column-instance column='[scenario_label]' derivation='None' name='[none:scenario_label:nk]' pivot='key' type='nominal' />
             <column-instance column='[action]' derivation='None' name='[none:action:nk]' pivot='key' type='nominal' />
             <column-instance column='[share_pct]' derivation='Sum' name='[sum:share_pct:qk]' pivot='key' type='quantitative' />
@@ -217,7 +288,14 @@
       <layout-options>
         <title>
           <formatted-text>
-            <run bold='true' fontcolor='#222222' fontname='Tableau Medium' fontsize='12'>Profit by cutoff (cutoff ≤ 25%)</run>
+            <run bold='true' fontcolor='#222222' fontname='Tableau Medium' fontsize='12'>Profit by cutoff · </run>
+            <run bold='true' fontcolor='#4C78A8' fontname='Tableau Medium' fontsize='12'>Conservative</run>
+            <run bold='true' fontcolor='#222222' fontname='Tableau Medium' fontsize='12'> / </run>
+            <run bold='true' fontcolor='#F2A541' fontname='Tableau Medium' fontsize='12'>Moderate</run>
+            <run bold='true' fontcolor='#222222' fontname='Tableau Medium' fontsize='12'> / </run>
+            <run bold='true' fontcolor='#2F6B4F' fontname='Tableau Medium' fontsize='12'>Aggressive</run>
+            <run bold='true' fontcolor='#222222' fontname='Tableau Medium' fontsize='12'> / </run>
+            <run bold='true' fontcolor='#9B3A32' fontname='Tableau Medium' fontsize='12'>Stress</run>
           </formatted-text>
         </title>
       </layout-options>
@@ -227,9 +305,9 @@
             <datasource caption='Threshold curve' name='federated.threshold' />
           </datasources>
           <datasource-dependencies datasource='federated.threshold'>
-      <column datatype='string' name='[scenario_label]' role='dimension' type='nominal' />
-      <column datatype='real' name='[probability_cutoff]' role='dimension' type='quantitative' />
-      <column datatype='real' name='[profit_millions]' role='measure' type='quantitative' />
+      <column datatype='string' name='[scenario_label]' caption='Scenario' role='dimension' type='nominal' />
+      <column datatype='real' name='[probability_cutoff]' caption='Calibrated PD cutoff' role='dimension' type='quantitative' />
+      <column datatype='real' name='[profit_millions]' caption='Expected profit ($M)' role='measure' type='quantitative' />
             <column-instance column='[scenario_label]' derivation='None' name='[none:scenario_label:nk]' pivot='key' type='nominal' />
             <column-instance column='[probability_cutoff]' derivation='None' name='[none:probability_cutoff:qk]' pivot='key' type='quantitative' />
             <column-instance column='[profit_millions]' derivation='Sum' name='[sum:profit_millions:qk]' pivot='key' type='quantitative' />
@@ -289,8 +367,8 @@
             <datasource caption='Champion / challenger power' name='federated.power' />
           </datasources>
           <datasource-dependencies datasource='federated.power'>
-      <column datatype='integer' name='[n_accounts_per_arm]' role='dimension' type='quantitative' />
-      <column datatype='real' name='[power_pct]' role='measure' type='quantitative' />
+      <column datatype='integer' name='[n_accounts_per_arm]' caption='Accounts per arm' role='dimension' type='quantitative' />
+      <column datatype='real' name='[power_pct]' caption='Power (%)' role='measure' type='quantitative' />
             <column-instance column='[n_accounts_per_arm]' derivation='None' name='[none:n_accounts_per_arm:qk]' pivot='key' type='quantitative' />
             <column-instance column='[power_pct]' derivation='Sum' name='[sum:power_pct:qk]' pivot='key' type='quantitative' />
           </datasource-dependencies>
@@ -334,7 +412,12 @@
       <layout-options>
         <title>
           <formatted-text>
-            <run bold='true' fontcolor='#222222' fontname='Tableau Medium' fontsize='12'>Reliability: predicted vs observed</run>
+            <run bold='true' fontcolor='#222222' fontname='Tableau Medium' fontsize='12'>Reliability · </run>
+            <run bold='true' fontcolor='#6B6458' fontname='Tableau Medium' fontsize='12'>raw</run>
+            <run bold='true' fontcolor='#222222' fontname='Tableau Medium' fontsize='12'> / </run>
+            <run bold='true' fontcolor='#F2A541' fontname='Tableau Medium' fontsize='12'>Platt</run>
+            <run bold='true' fontcolor='#222222' fontname='Tableau Medium' fontsize='12'> / </run>
+            <run bold='true' fontcolor='#2F6B4F' fontname='Tableau Medium' fontsize='12'>isotonic</run>
           </formatted-text>
         </title>
       </layout-options>
@@ -344,9 +427,9 @@
             <datasource caption='Calibration' name='federated.calibration' />
           </datasources>
           <datasource-dependencies datasource='federated.calibration'>
-      <column datatype='string' name='[method]' role='dimension' type='nominal' />
-      <column datatype='real' name='[mean_predicted_pct]' role='measure' type='quantitative' />
-      <column datatype='real' name='[observed_pct]' role='measure' type='quantitative' />
+      <column datatype='string' name='[method]' caption='Method' role='dimension' type='nominal' />
+      <column datatype='real' name='[mean_predicted_pct]' caption='Mean predicted PD (%)' role='measure' type='quantitative' />
+      <column datatype='real' name='[observed_pct]' caption='Observed default rate (%)' role='measure' type='quantitative' />
             <column-instance column='[method]' derivation='None' name='[none:method:nk]' pivot='key' type='nominal' />
             <column-instance column='[mean_predicted_pct]' derivation='Sum' name='[sum:mean_predicted_pct:qk]' pivot='key' type='quantitative' />
             <column-instance column='[observed_pct]' derivation='Sum' name='[sum:observed_pct:qk]' pivot='key' type='quantitative' />
